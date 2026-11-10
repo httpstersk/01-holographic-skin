@@ -7,15 +7,24 @@ import {
 } from '@videojs/react/icons/scaffold';
 import type { ClassValue } from 'cn';
 
-import { cn } from '@/lib/resolve-class-name';
+import { cn, resolveClassName } from '@/lib/resolve-class-name';
 
 import { Button } from './button';
 import { ButtonTooltip } from './tooltip';
 
-export function AirPlayButton({ popupClassName }: { popupClassName?: ClassValue } = {}) {
+export function AirPlayButton({
+  className,
+  popupClassName,
+}: {
+  className?: ClassValue;
+  popupClassName?: ClassValue;
+} = {}) {
   return (
     <ButtonTooltip popupClassName={popupClassName}>
-      <AirPlayButtonPrimitive render={<Button />} className={'group/airplay'}>
+      <AirPlayButtonPrimitive
+        render={<Button />}
+        className={(state) => cn('group/airplay', resolveClassName(className, state))}
+      >
         <AirPlayEnterIconPrimitive
           className={cn('col-start-1 row-start-1 size-4.5', 'group-data-[airplay-state=connected]/airplay:hidden')}
         />

@@ -16,11 +16,13 @@ import { ButtonTooltip } from './tooltip';
 export function SeekButton({
   className,
   iconClassName,
+  labelClassName,
   seconds,
   tooltip = true,
 }: {
   className?: ClassValue;
   iconClassName?: ClassValue;
+  labelClassName?: ClassValue;
   seconds: number;
   tooltip?: boolean;
 }) {
@@ -30,17 +32,23 @@ export function SeekButton({
     <ButtonTooltip disabled={!tooltip}>
       <SeekButtonPrimitive
         render={<Button />}
-        className={(state) => cn(resolveClassName(className, state))}
+        className={(state) => cn('group/seek', resolveClassName(className, state))}
         seconds={seconds}
       >
-        <div className={'relative grid'}>
+        <div
+          className={cn(
+            'relative grid place-items-center transition-transform duration-150 ease-out',
+            backward ? 'motion-safe:group-hover/seek:-rotate-12' : 'motion-safe:group-hover/seek:rotate-12'
+          )}
+        >
           <SeekIconPrimitive
             className={cn('col-start-1 row-start-1 size-4.5', backward && 'transform-[scaleX(-1)]', iconClassName)}
           />
           <span
             className={cn(
-              'absolute bottom-[calc(var(--media-spacing)*-0.75)] text-[calc(var(--media-spacing)*2.25)] tabular-nums',
-              backward ? '-left-px' : '-right-px'
+              'absolute bottom-[calc(var(--media-spacing)*-0.75)] text-[calc(var(--media-spacing)*2.25)] font-semibold tabular-nums',
+              backward ? '-left-px' : '-right-px',
+              labelClassName
             )}
           >
             {Math.abs(seconds)}

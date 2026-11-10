@@ -15,6 +15,8 @@ import { CaptionsRadioGroup } from '@videojs/react/ui/captions-radio-group';
 import { PlaybackRateRadioGroup } from '@videojs/react/ui/playback-rate-radio-group';
 import { QualityRadioGroup } from '@videojs/react/ui/quality-radio-group';
 
+import type { ClassValue } from 'cn';
+
 import { cn } from '@/lib/resolve-class-name';
 
 import { Button } from './button';
@@ -248,9 +250,6 @@ function CaptionsMenu() {
             renderItem={(props, item) => (
               <RadioItem {...props}>
                 <span>{item.label}</span>
-                {item.badge ? (
-                  <span className={'rounded-media-pill bg-media-muted px-1.5 text-media-sm'}>{item.badge}</span>
-                ) : null}
               </RadioItem>
             )}
           ></CaptionsRadioGroup.Options>
@@ -260,12 +259,27 @@ function CaptionsMenu() {
   );
 }
 
-export function SettingsMenu() {
+export function SettingsMenu({
+  buttonClassName,
+  iconClassName,
+  side = 'top',
+  align = 'center',
+}: {
+  buttonClassName?: ClassValue;
+  iconClassName?: ClassValue;
+  side?: 'top' | 'bottom' | 'left' | 'right';
+  align?: 'start' | 'center' | 'end';
+} = {}) {
   return (
-    <Menu.Root side="top" align="center">
+    <Menu.Root side={side} align={align}>
       <ButtonTooltip label={<TextPrimitive token={settingsText.key}>{settingsText.text}</TextPrimitive>}>
-        <Menu.Trigger render={<Button />}>
-          <GearIconPrimitive className={'col-start-1 row-start-1 size-4.5'} />
+        <Menu.Trigger render={<Button className={cn('group/settings', buttonClassName)} />}>
+          <GearIconPrimitive
+            className={cn(
+              'col-start-1 row-start-1 size-4.5 transition-transform duration-200 ease-out motion-safe:group-hover/settings:rotate-45',
+              iconClassName
+            )}
+          />
           <TextPrimitive className={'sr-only'} token={settingsText.key}>
             {settingsText.text}
           </TextPrimitive>

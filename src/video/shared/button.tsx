@@ -11,7 +11,8 @@ export function Button({ className, ...props }: ButtonProps) {
         'relative grid size-8 shrink-0 cursor-pointer touch-manipulation place-items-center rounded-media-control border border-solid border-media-edge bg-media-background p-0 text-inherit',
         // The oval is 32px; on touch its hit area is 44px.
         "pointer-coarse:before:absolute pointer-coarse:before:-inset-[7px] pointer-coarse:before:content-['']",
-        'transition-[background-color,border-color,color,scale] duration-media-fast ease-out motion-safe:active:scale-[0.94]',
+        'transition-[background-color,border-color,color,scale,translate,transform] duration-150 ease-out',
+        'motion-safe:hover:-translate-y-0.5 motion-safe:hover:scale-108 motion-safe:active:translate-y-0 motion-safe:active:scale-92',
         // Hover, focus, and an open menu fill the oval with foil and cut the icon out of it.
         'hover:border-media-foreground hover:bg-media-foreground hover:text-media-background',
         'focus-visible:border-media-foreground focus-visible:bg-media-foreground focus-visible:text-media-background',

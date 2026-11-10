@@ -1,9 +1,12 @@
 /** @jsxImportSource react */
 
+import { selectPlayback } from '@videojs/core/dom';
+import { usePlayer } from '@videojs/react';
 import { Component, lazy, Suspense, useState, useSyncExternalStore, type ReactNode } from 'react';
 
 // Three.js loads after the controls are on screen; the skin is complete without it.
 const FoilCanvas = lazy(() => import('./foil'));
+const AmbientHoloCanvas = lazy(() => import('./ambient-canvas'));
 
 const OFF = '(prefers-contrast: more), (prefers-reduced-transparency: reduce), (forced-colors: active)';
 const STILL = '(prefers-reduced-motion: reduce)';
@@ -51,13 +54,45 @@ export function HoloFoil() {
       ref={setLayer}
       aria-hidden="true"
       className={
-        'pointer-events-none absolute inset-0 mix-blend-multiply media-high-contrast:hidden forced-colors:hidden'
+        'pointer-events-none absolute inset-0 z-20 mix-blend-multiply media-high-contrast:hidden forced-colors:hidden'
       }
     >
       {host && mode !== 'off' && (
         <FoilBoundary>
           <Suspense fallback={null}>
             <FoilCanvas host={host} still={mode === 'still'} />
+          </Suspense>
+        </FoilBoundary>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Full-video physical holographic lighting layer.
+ * Covers the entire video surface and smoothly activates only when the video is idle (paused or ended).
+ */
+export function AmbientHoloStage() {
+  const [layer, setLayer] = useState<HTMLDivElement | null>(null);
+  const mode = useSyncExternalStore<Mode>(subscribe, getMode, () => 'off');
+  const playback = usePlayer(selectPlayback);
+
+  const isIdle = playback ? Boolean(playback.paused || playback.ended) : true;
+  const host = layer?.parentElement;
+
+  return (
+    <div
+      ref={setLayer}
+      aria-hidden="true"
+      data-idle={isIdle ? '' : undefined}
+      className={
+        'pointer-events-none absolute inset-0 z-10 mix-blend-screen media-high-contrast:hidden forced-colors:hidden'
+      }
+    >
+      {host && mode !== 'off' && (
+        <FoilBoundary>
+          <Suspense fallback={null}>
+            <AmbientHoloCanvas host={host} still={mode === 'still'} idle={isIdle} />
           </Suspense>
         </FoilBoundary>
       )}

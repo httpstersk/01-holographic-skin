@@ -5,7 +5,6 @@ import type { ReactNode } from 'react';
 import { CaptionsToggle } from './captions-button';
 import { ControlsContent, type ControlsSlots } from './controls';
 import { ScreenControls } from './screen-controls';
-import { Title } from './title';
 import { VideoBufferingIndicator } from './video-feedback';
 
 export function VideoControlsContent({
@@ -21,19 +20,14 @@ export function VideoControlsContent({
       {/* No scrim over the picture: every control carries its own opaque plate. */}
       <VideoBufferingIndicator />
       <ControlsContent
-        captions={!live && <CaptionsToggle />}
+        captions={!live && <CaptionsToggle className={'size-9.5! rounded-[14px]!'} />}
         center={center}
         live={live}
         menu={menu}
         renderThumbnail={renderThumbnail}
         seekBackward={seekBackward}
         seekForward={seekForward}
-        top={
-          <>
-            <Title />
-            <ScreenControls />
-          </>
-        }
+        top={<ScreenControls />}
       />
     </>
   );

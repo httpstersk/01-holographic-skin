@@ -8,56 +8,11 @@ import { cn } from '@/lib/resolve-class-name';
 import { HoloFoil } from '../holo/foil-layer';
 import { LiveButton } from './live-button';
 import { AudioPlayButton, PlayButton } from './play-button';
-import { TimeSlider } from './time-slider';
-import { type ThumbnailSlot } from './time-slider';
+import { FullscreenButton } from './screen-controls';
+import { SeekButton } from './seek-button';
+import { TimeSlider, type ThumbnailSlot } from './time-slider';
+import { Title } from './title';
 import { VolumePopover } from './volume-popover';
-
-export function ControlsRow({
-  audio = false,
-  captions,
-  live = false,
-  menu,
-  rate,
-  seekBackward,
-  seekForward,
-}: ControlsSlots & { audio?: boolean; live?: boolean; menu?: ReactNode } = {}) {
-  return (
-    <Controls.Group className={'flex items-center rtl:flex-row-reverse justify-between gap-2 pointer-coarse:gap-3'}>
-      <Controls.Group className={cn('flex items-center rtl:flex-row-reverse gap-2 pointer-coarse:gap-3', 'min-w-0')}>
-        {audio ? <AudioPlayButton /> : <PlayButton />}
-        {seekBackward}
-        {seekForward}
-        {live && <LiveButton />}
-        {!audio && <VolumePopover />}
-        {!live && (
-          <Time.Group
-            className={
-              'flex h-8 shrink-0 items-center rtl:flex-row-reverse gap-1 px-1 text-media leading-none tracking-normal tabular-nums'
-            }
-          >
-            <Time.Value
-              className={cn(
-                'cursor-pointer rounded-none media-xs:hidden outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-media-ring',
-                'data-disabled:cursor-not-allowed data-disabled:opacity-40 forced-colors:data-disabled:text-[GrayText] forced-colors:data-disabled:opacity-100'
-              )}
-              type="current"
-              toggle
-            />
-            <Time.Value className={'hidden media-xs:inline data-unavailable:opacity-50'} type="current" />
-            <Time.Separator className={'hidden opacity-70 media-xs:inline data-unavailable:opacity-50'} />
-            <Time.Value className={'hidden opacity-70 media-xs:inline data-unavailable:opacity-50'} type="duration" />
-          </Time.Group>
-        )}
-      </Controls.Group>
-
-      <Controls.Group className={'flex items-center rtl:flex-row-reverse gap-2 pointer-coarse:gap-3'}>
-        {captions}
-        {rate}
-        {menu ?? (audio && <VolumePopover />)}
-      </Controls.Group>
-    </Controls.Group>
-  );
-}
 
 export interface ControlsSlots extends ThumbnailSlot {
   /** The captions toggle, supplied by the video presets because the audio presets have no text track feature. */
@@ -93,23 +48,24 @@ export function ControlsContent({
       )}
     >
       <Tooltip.Provider>
+        {/* Top-Right Floating Pebble Trio (AirPlay / Cast / PiP) */}
         {top && (
           <Controls.Group
             className={cn(
-              'group-not-data-visible/controls:pointer-events-none pointer-events-auto absolute inset-x-0 top-0 p-2 media-xs:p-3 flex items-center rtl:flex-row-reverse justify-end gap-2 pointer-coarse:gap-3',
-              'forced-colors:rounded-none forced-colors:bg-[Canvas]',
-              'forced-colors:inset-x-0 forced-colors:top-0 forced-colors:justify-end forced-colors:rounded-none!',
-              'forced-colors:inset-e-0'
+              'group-not-data-visible/controls:pointer-events-none pointer-events-auto absolute right-3 top-3 flex items-center rtl:flex-row-reverse gap-1.5',
+              'forced-colors:rounded-none forced-colors:bg-[Canvas]'
             )}
           >
             {top}
           </Controls.Group>
         )}
+
+        {/* Center Bouncy Squircle Bubble Triad */}
         {center && (
           <BufferingIndicator className={'group/center-buffering contents'}>
             <Controls.Group
               className={cn(
-                'group-not-data-visible/controls:pointer-events-none pointer-events-auto absolute left-1/2 top-1/2 hidden transform-[translate(-50%,-50%)] items-center rtl:flex-row-reverse gap-3 media-360:flex',
+                'group-not-data-visible/controls:pointer-events-none pointer-events-auto absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center rtl:flex-row-reverse gap-3 media-360:flex',
                 'forced-colors:bg-transparent!',
                 'group-data-visible/center-buffering:hidden!'
               )}
@@ -117,41 +73,114 @@ export function ControlsContent({
               {seekBackward}
               <PlayButton
                 className={cn(
-                  // The one solid foil surface: a coin with the glyph cut out of it.
-                  'm-0! size-14.5! border-media-foreground! bg-media-foreground! text-media-background!',
-                  'motion-safe:hover:scale-[1.05] motion-safe:active:scale-[0.96]',
+                  'm-0! size-17! rounded-[24px]! border-2 border-media-foreground! bg-media-foreground! text-media-background! shadow-[0_12px_28px_rgb(0_0_0/0.6)]',
+                  'motion-safe:hover:scale-110 motion-safe:active:scale-92',
                   'forced-colors:bg-[ButtonFace]! forced-colors:text-[ButtonText]!',
                   'forced-colors:hover:bg-[Highlight]! forced-colors:focus-visible:bg-[Highlight]! forced-colors:aria-expanded:bg-[Highlight]!'
                 )}
-                iconClassName={'size-7!'}
+                iconClassName={'size-7.5!'}
                 tooltip={false}
               />
               {seekForward}
             </Controls.Group>
           </BufferingIndicator>
         )}
-        {/* The dock: one black card, inset from the frame, holding the track and the row beneath it. */}
+
+        {/* Bottom Asymmetric Bento Cluster */}
         <div
           data-holo=""
           className={cn(
-            'group-not-data-visible/controls:pointer-events-none pointer-events-auto absolute inset-x-2 bottom-2 flex flex-col gap-2 p-2',
-            'media-xs:inset-x-3 media-xs:bottom-3 media-xs:px-3 media-xs:pt-3 media-xs:pb-2.5',
-            'rounded-media-controls border border-solid border-media-edge bg-media-background shadow-(--media-shadow-surface)',
+            'group-not-data-visible/controls:pointer-events-none pointer-events-auto absolute inset-x-2.5 bottom-2.5 flex items-end gap-2 rounded-[26px] border border-solid border-media-edge bg-media-background p-2 shadow-(--media-shadow-surface)',
+            'media-sm:inset-x-4 media-sm:bottom-3.5 media-sm:gap-2.5 media-sm:p-2.5',
             'forced-colors:rounded-none forced-colors:bg-[Canvas]',
             audio && 'static! p-3',
             !audio && 'forced-colors:inset-x-0 forced-colors:bottom-0 forced-colors:rounded-none!'
           )}
         >
-          {!live && <TimeSlider audio={audio} renderThumbnail={renderThumbnail} />}
-          <ControlsRow
-            audio={audio}
-            captions={captions}
-            live={live}
-            menu={menu}
-            rate={rate}
-            seekBackward={center ? undefined : seekBackward}
-            seekForward={center ? undefined : seekForward}
-          />
+          {/* Left Bookend: Giant Squircle-Bubble Play Button */}
+          {audio ? (
+            <AudioPlayButton />
+          ) : (
+            <PlayButton
+              className={
+                'size-13.5! shrink-0 rounded-[20px]! border-2 border-media-foreground! bg-media-foreground! text-media-background!'
+              }
+              iconClassName={'size-6.5!'}
+            />
+          )}
+
+          {/* Middle Bento Column: Upper Micro-Pebble Shelf + Lower Chubby Capsule Scrubber */}
+          <div className={'flex min-w-0 flex-1 flex-col gap-1.5'}>
+            <div className={'flex items-center justify-between gap-1.5'}>
+              <div className={'flex min-w-0 items-center gap-1.5'}>
+                <Title />
+                {!live && (
+                  <>
+                    <SeekButton
+                      seconds={-10}
+                      tooltip={false}
+                      className={'m-0! hidden size-8.5! rounded-full pointer-fine:grid'}
+                      iconClassName={'size-4!'}
+                      labelClassName={'text-[7px] bottom-[-2px]'}
+                    />
+                    <SeekButton
+                      seconds={10}
+                      tooltip={false}
+                      className={'m-0! hidden size-8.5! rounded-full pointer-fine:grid'}
+                      iconClassName={'size-4!'}
+                      labelClassName={'text-[7px] bottom-[-2px]'}
+                    />
+                  </>
+                )}
+                {live && <LiveButton />}
+              </div>
+
+              {!live && (
+                <Time.Group
+                  data-holo=""
+                  className={
+                    'flex h-8 shrink-0 items-center rtl:flex-row-reverse gap-1 rounded-full border border-media-edge/70 bg-[#101015] px-3 text-media-xs leading-none font-medium tracking-normal tabular-nums'
+                  }
+                >
+                  <Time.Value
+                    className={cn(
+                      'cursor-pointer rounded-none media-xs:hidden outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-media-ring',
+                      'data-disabled:cursor-not-allowed data-disabled:opacity-40 forced-colors:data-disabled:text-[GrayText] forced-colors:data-disabled:opacity-100'
+                    )}
+                    type="current"
+                    toggle
+                  />
+                  <Time.Value className={'hidden media-xs:inline data-unavailable:opacity-50'} type="current" />
+                  <Time.Separator className={'hidden opacity-55 media-xs:inline data-unavailable:opacity-50'} />
+                  <Time.Value
+                    className={'hidden opacity-65 media-xs:inline data-unavailable:opacity-50'}
+                    type="duration"
+                  />
+                </Time.Group>
+              )}
+            </div>
+
+            {!live && <TimeSlider audio={audio} renderThumbnail={renderThumbnail} />}
+          </div>
+
+          {/* Right Bookend Bento Cluster: Varied Pebble Sizes */}
+          <Controls.Group className={'flex shrink-0 items-center rtl:flex-row-reverse gap-1.5'}>
+            {!audio && (
+              <VolumePopover
+                buttonClassName={'size-11! rounded-[16px]!'}
+                iconClassName={'size-5!'}
+              />
+            )}
+            {captions}
+            {rate}
+            {menu ?? (audio && <VolumePopover />)}
+            {!audio && (
+              <FullscreenButton
+                className={'size-12.5! rounded-[18px]! border-media-foreground/80'}
+                iconClassName={'size-5.5!'}
+              />
+            )}
+          </Controls.Group>
         </div>
       </Tooltip.Provider>
       <HoloFoil />

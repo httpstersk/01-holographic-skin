@@ -11,6 +11,7 @@ import { cn } from '@/lib/resolve-class-name';
 import { VideoGestures } from './behaviors/gestures';
 import { VideoHotkeys } from './behaviors/hotkeys';
 import { VideoControls } from './controls';
+import { AmbientHoloStage } from './holo/foil-layer';
 import { ErrorDialog } from './shared/error-dialog';
 import { Indicators } from './shared/indicators';
 import { SeekIndicator } from './shared/seek-indicator';
@@ -40,6 +41,7 @@ export function VideoSkin({ children, className, renderPoster, renderThumbnail, 
       {children}
       <Poster renderImage={renderPoster} />
       <ErrorDialog />
+      <AmbientHoloStage />
       <VideoControls renderThumbnail={renderThumbnail} />
 
       <VideoHotkeys />

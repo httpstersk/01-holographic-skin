@@ -11,15 +11,15 @@ import { cn, resolveClassName } from '@/lib/resolve-class-name';
 import { Button } from './button';
 import { ButtonTooltip } from './tooltip';
 
-export function CaptionsToggle() {
+export type CaptionsButtonProps = Omit<CaptionsButtonPrimitive.Props, 'children'>;
+
+export function CaptionsToggle({ className }: { className?: CaptionsButtonProps['className'] } = {}) {
   return (
     <ButtonTooltip>
-      <CaptionsButton />
+      <CaptionsButton className={className} />
     </ButtonTooltip>
   );
 }
-
-export type CaptionsButtonProps = Omit<CaptionsButtonPrimitive.Props, 'children'>;
 
 export function CaptionsButton({ className, ...props }: CaptionsButtonProps = {}) {
   return (

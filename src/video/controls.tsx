@@ -12,11 +12,11 @@ export function VideoControls({ renderThumbnail }: ThumbnailSlot = {}) {
     <Controls.Root>
       <VideoControlsContent
         center
-        menu={<SettingsMenu />}
+        menu={<SettingsMenu buttonClassName={'size-9.5! rounded-[14px]!'} />}
         renderThumbnail={renderThumbnail}
         seekBackward={
           <SeekButton
-            className={'m-0! hidden size-10! pointer-fine:grid'}
+            className={'m-0! hidden size-11.5! rounded-[16px]! pointer-fine:grid'}
             iconClassName={'size-4.5'}
             seconds={-10}
             tooltip={false}
@@ -24,7 +24,7 @@ export function VideoControls({ renderThumbnail }: ThumbnailSlot = {}) {
         }
         seekForward={
           <SeekButton
-            className={'m-0! hidden size-10! pointer-fine:grid'}
+            className={'m-0! hidden size-11.5! rounded-[16px]! pointer-fine:grid'}
             iconClassName={'size-4.5'}
             seconds={10}
             tooltip={false}

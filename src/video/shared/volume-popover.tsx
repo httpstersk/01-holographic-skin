@@ -1,17 +1,26 @@
 /** @jsxImportSource react */
 
 import { VolumePopover as VolumePopoverPrimitive, VolumeSlider } from '@videojs/react';
+import type { ClassValue } from 'cn';
 
 import { cn } from '@/lib/resolve-class-name';
 
-import { MuteButton } from './mute-button';
+import { MuteButton, type MuteButtonProps } from './mute-button';
 import { ButtonTooltip } from './tooltip';
 
-export function VolumePopover() {
+export function VolumePopover({
+  buttonClassName,
+  iconClassName,
+}: {
+  buttonClassName?: MuteButtonProps['className'];
+  iconClassName?: ClassValue;
+} = {}) {
   return (
-    <VolumePopoverPrimitive.Root openOnHover delay={200} closeDelay={100} side="top">
+    <VolumePopoverPrimitive.Root openOnHover delay={160} closeDelay={100} side="top">
       <ButtonTooltip delay={0} disabled sticky>
-        <VolumePopoverPrimitive.Trigger render={<MuteButton />} />
+        <VolumePopoverPrimitive.Trigger
+          render={<MuteButton className={buttonClassName} iconClassName={iconClassName} />}
+        />
       </ButtonTooltip>
       <VolumePopoverPrimitive.Popup
         className={cn(
@@ -25,28 +34,23 @@ export function VolumePopover() {
           'data-[side=left]:[--media-popup-translate-x-distance:var(--media-popup-translate-distance)]',
           'data-[side=right]:[--media-popup-translate-x-distance:calc(var(--media-popup-translate-distance)*-1)]',
           'before:pointer-events-auto before:absolute',
-          'data-[side=top]:before:inset-x-0 data-[side=top]:before:top-full',
-          'data-[side=bottom]:before:inset-x-0 data-[side=bottom]:before:bottom-full',
-          'data-[side=left]:before:inset-y-0 data-[side=left]:before:left-full',
-          'data-[side=right]:before:inset-y-0 data-[side=right]:before:right-full',
-          'data-[side=top]:before:h-(--media-popup-side-offset) data-[side=bottom]:before:h-(--media-popup-side-offset)',
-          'data-[side=left]:before:w-(--media-popup-side-offset) data-[side=right]:before:w-(--media-popup-side-offset)',
+          'data-[side=top]:before:inset-x-0 data-[side=top]:before:top-full data-[side=top]:before:h-3',
           'z-20 h-28 w-8 rounded-media-control foil-edge-media px-3.5 py-3.5 text-media-popover-foreground transition-media-popup',
-          '[--media-popup-side-offset:var(--media-popover-side-offset)] [--media-popover-side-offset:calc(var(--media-spacing)*9)]',
+          '[--media-popup-side-offset:calc(var(--media-spacing)*3)] [--media-popover-side-offset:calc(var(--media-spacing)*3)]',
           'media-high-contrast:outline forced-colors:outline'
         )}
       >
         <VolumeSlider.Root
           className={
-            "[--media-accent:var(--media-accent-color,var(--media-popover-foreground))] relative flex size-full cursor-pointer touch-none justify-center data-disabled:cursor-not-allowed data-disabled:opacity-40 before:absolute before:-inset-x-3.5 before:-inset-y-2 before:content-['']"
+            "[--media-accent:var(--media-accent-color,var(--media-popover-foreground))] relative flex size-full cursor-pointer touch-none items-center justify-center data-disabled:cursor-not-allowed data-disabled:opacity-40 before:absolute before:-inset-3 before:content-['']"
           }
           orientation="vertical"
           thumbAlignment="edge"
         >
           <VolumeSlider.Track
             className={cn(
-              'absolute bottom-0 left-1/2 h-full w-1 transform-[translateX(-50%)] overflow-hidden rounded-media-pill bg-(--media-holo-buffer) forced-colors:forced-color-adjust-none',
-              'forced-colors:w-1.5 forced-colors:bg-[Canvas] forced-colors:border forced-colors:border-solid forced-colors:border-[CanvasText]'
+              'relative h-full w-1.5 overflow-hidden rounded-media-pill bg-(--media-holo-buffer) forced-colors:forced-color-adjust-none',
+              'forced-colors:bg-[Canvas] forced-colors:border forced-colors:border-solid forced-colors:border-[CanvasText]'
             )}
           >
             <VolumeSlider.Fill
@@ -57,7 +61,7 @@ export function VolumePopover() {
           </VolumeSlider.Track>
           <VolumeSlider.Thumb
             className={cn(
-              'absolute bottom-[var(--media-slider-fill,0%)] left-1/2 h-1.5 w-4 transform-[translate(-50%,50%)] rounded-media-pill bg-media-popover-foreground shadow-media-thumb',
+              'absolute bottom-[var(--media-slider-fill,0%)] left-1/2 h-2 w-4 transform-[translate(-50%,50%)] rounded-media-pill bg-media-popover-foreground shadow-media-thumb',
               'outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-media-ring',
               'forced-colors:bg-[Highlight] forced-colors:forced-color-adjust-none',
               'forced-colors:border forced-colors:border-solid forced-colors:border-[CanvasText]'

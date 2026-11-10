@@ -13,8 +13,8 @@ import {
   Vector2,
 } from 'three';
 
-/** Most plates the layer lights at once. The video preset shows about twenty. */
-const MAX_PLATES = 48;
+/** Most plates the layer lights at once. */
+const MAX_PLATES = 64;
 
 const vertexShader = /* glsl */ `
   attribute vec4 aRect;   // x, y, width, height in CSS px from the layer's top-left
@@ -45,14 +45,16 @@ const vertexShader = /* glsl */ `
 `;
 
 /*
- * The layer is multiplied into the controls beneath it, so this writes the colour of the light the foil returns:
- * white ink takes it whole, the black card returns none. Each plate carries its own light, which is what lets the
- * reflection cross the controls one after another.
+ * Sleek, dot-free physical thin-film interference shader for [data-holo] control plates.
+ * Because this layer uses `mix-blend-multiply` over white ink and borders, rich chromatic saturation
+ * (keeping channels below 1.0 except at crisp specular crests) produces a lush, liquid-smooth
+ * metallic prism look without washing out to flat white.
  */
 const fragmentShader = /* glsl */ `
   precision highp float;
 
   uniform vec2 uRes;
+  uniform float uTime;
 
   varying vec2 vPx;
   varying vec2 vLocal;
@@ -60,58 +62,73 @@ const fragmentShader = /* glsl */ `
   varying vec4 vLight;
   varying float vRadius;
 
+  const float BENTO_TONE = 3.0;
+
   float sdRoundBox(vec2 p, vec2 b, float r) {
     vec2 q = abs(p) - b + r;
     return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - r;
   }
 
-  vec3 spectrum(float t) {
-    return 0.5 + 0.5 * cos(6.28318 * (t + vec3(0.0, 0.33, 0.67)));
-  }
-
-  float hash(vec2 p) {
-    return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+  // Rich, continuous thin-film spectral interference (zero grain or pixel dots)
+  vec3 thinFilmSpectrum(float t, float toneId) {
+    vec3 shift = vec3(0.0, 0.33, 0.67) + toneId * vec3(0.17, 0.29, 0.41);
+    vec3 c1 = 0.52 + 0.46 * cos(6.2831853 * (t + shift));
+    vec3 c2 = 0.52 + 0.46 * cos(6.2831853 * (t * 1.5 - shift.yzx + 0.15));
+    return mix(c1, c2, 0.28);
   }
 
   void main() {
     float radius = min(vRadius, min(vHalf.x, vHalf.y));
-    float alpha = 1.0 - smoothstep(-0.75, 0.25, sdRoundBox(vLocal, vHalf, radius));
+    float d = sdRoundBox(vLocal, vHalf, radius);
+    float aa = max(fwidth(d), 0.75);
+    float alpha = 1.0 - smoothstep(-aa * 0.5, aa * 0.5, d);
     if (alpha <= 0.0) discard;
 
     float intensity = vLight.z;
     float seed = vLight.w;
     vec2 toLight = vPx - vLight.xy;
-    float reach = clamp(0.5 * length(uRes), 260.0, 900.0);
+    float reach = clamp(0.75 * length(uRes), 420.0, 1200.0);
     float near = exp(-dot(toLight, toLight) / (reach * reach));
 
-    // Diffraction: hue follows the angle to the light, tilted a little differently on every plate.
-    float tiltAngle = seed * 6.28318;
+    // Smooth surface normal from rounded-box SDF for physical bevel refraction
+    vec2 norm2D = vLocal / max(vHalf, vec2(1.0));
+    float rimFactor = 1.0 - smoothstep(0.0, 14.0, -d);
+
+    // Continuous anisotropic diffraction phase (zero pixel noise)
+    float tiltAngle = seed * 6.2831853 + BENTO_TONE * 0.65;
     vec2 tilt = vec2(cos(tiltAngle), sin(tiltAngle));
-    float phase = dot(toLight, vec2(0.0042, 0.0027)) + dot(toLight, tilt) * 0.0016 + seed * 0.61;
-    // The emboss bends the film slightly.
-    phase += 0.035 * sin(vPx.x * 0.09 + vPx.y * 0.05 + seed * 10.0);
-    vec3 holo = mix(spectrum(phase), vec3(1.0), 0.16);
+    float phase = dot(toLight, vec2(0.0036, 0.0024))
+                + dot(toLight, tilt) * 0.0018
+                + dot(norm2D, vec2(0.28, -0.22))
+                + rimFactor * 0.24
+                + seed * 0.61
+                + uTime * 0.08;
 
-    // A hot band where the foil faces the light squarely. It runs beside the pointer, not under it, so the control
-    // being pointed at keeps its colour.
-    float streakAngle = 0.9 + (seed - 0.5) * 0.8;
-    float band = dot(toLight, vec2(cos(streakAngle), sin(streakAngle))) - 90.0;
-    float streak = exp(-band * band / 3200.0) * near;
+    // Smooth liquid undulation across control surfaces
+    phase += 0.05 * sin(vPx.x * 0.024 - vPx.y * 0.018 + uTime * 0.4 + seed * 6.28);
 
-    // Grain in the film.
-    float sparkle = smoothstep(0.93, 1.0, hash(floor(vPx))) * near;
+    vec3 holo = thinFilmSpectrum(phase, BENTO_TONE);
 
-    // Unlit foil is flat silver with a faint sheen, never dark.
-    vec3 silver = vec3(0.74, 0.76, 0.80) + 0.04 * sin(vPx.y * 0.02 + seed * 6.0);
+    // Silky anisotropic specular band that shifts phase and adds a pearlescent gleam
+    float streakAngle = 0.85 + (seed - 0.5) * 0.6 + BENTO_TONE * 0.18;
+    vec2 streakDir = vec2(cos(streakAngle), sin(streakAngle));
+    float band = dot(toLight, streakDir) - 55.0;
+    float specular = exp(-band * band / 5400.0) * near;
 
-    float energy = clamp(intensity * (0.25 + 0.75 * near) * 1.1, 0.0, 1.0);
-    vec3 color = mix(silver, holo, energy);
-    color += (streak * 0.6 + sparkle * 0.45) * intensity;
+    // Pearlescent highlight shifts toward a secondary harmonic rather than bleaching to flat white
+    vec3 pearlGleam = thinFilmSpectrum(phase + 0.25, BENTO_TONE + 1.0) * 0.35 + vec3(0.65);
+    holo = mix(holo, pearlGleam, specular * 0.55);
 
-    // Keep deep blues and violets readable on the card.
+    // Subtle metallic silver-chrome base when unlit
+    vec3 chrome = vec3(0.72, 0.76, 0.84) + 0.05 * cos(vPx.y * 0.02 + seed * 5.0);
+
+    float energy = clamp(intensity * (0.65 + 0.35 * near), 0.0, 1.0);
+    vec3 color = mix(chrome, holo, energy);
+
+    // Ensure deep blues/violets stay luminous on dark cards without washing out saturation
     float luma = dot(color, vec3(0.2126, 0.7152, 0.0722));
-    color += max(0.0, 0.5 - luma);
-    color = clamp(color, 0.0, 1.0);
+    color += max(0.0, 0.44 - luma) * 0.75;
+    color = clamp(color, 0.0, 0.98);
 
     gl_FragColor = vec4(color * alpha, alpha);
   }
@@ -141,6 +158,7 @@ function Foil({ host, still }: { host: HTMLElement; still: boolean }) {
   const known = useRef(new WeakMap<HTMLElement, Plate>());
   const count = useRef(0);
   const pointer = useRef({ x: 0, y: 0, hover: false, focus: false });
+  const clockRef = useRef(0);
 
   const { geometry, material, rects, lights, radii } = useMemo(() => {
     const plane = new PlaneGeometry(1, 1);
@@ -159,7 +177,10 @@ function Foil({ host, still }: { host: HTMLElement; still: boolean }) {
     const material = new ShaderMaterial({
       vertexShader,
       fragmentShader,
-      uniforms: { uRes: { value: new Vector2(1, 1) } },
+      uniforms: {
+        uRes: { value: new Vector2(1, 1) },
+        uTime: { value: 0 },
+      },
       blending: NoBlending,
       depthTest: false,
       depthWrite: false,
@@ -200,11 +221,11 @@ function Foil({ host, still }: { host: HTMLElement; still: boolean }) {
             plate = {
               el,
               seed,
-              rate: 4 + 9 * ((seed * 7.31) % 1),
+              rate: 5 + 9 * ((seed * 7.31) % 1),
               radius: 0,
               lightX: 0,
               lightY: 0,
-              intensity: 0,
+              intensity: 0.92,
               placed: false,
             };
             known.current.set(el, plate);
@@ -220,7 +241,12 @@ function Foil({ host, still }: { host: HTMLElement; still: boolean }) {
       if (records.some((record) => record.type === 'childList')) collect();
       else invalidate();
     });
-    mutations.observe(host, { childList: true, subtree: true, attributes: true, attributeFilter: ['data-visible'] });
+    mutations.observe(host, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['data-visible'],
+    });
     collect();
 
     return () => {
@@ -279,15 +305,19 @@ function Foil({ host, still }: { host: HTMLElement; still: boolean }) {
 
   useFrame((_, delta) => {
     const dt = Math.min(delta, 0.05);
+    clockRef.current += dt;
     const origin = host.getBoundingClientRect();
     const state = pointer.current;
     const lit = still || state.hover || state.focus;
-    // With motion reduced the light is fixed, upper left of the frame, and nothing follows the pointer.
-    const targetX = still ? origin.width * 0.3 : state.x - origin.left;
-    const targetY = still ? origin.height * 0.35 : state.y - origin.top;
+
+    // Gentle ambient orbit when the pointer is outside so controls still have a sleek physical sheen at rest
+    const ambientX = origin.width * (0.48 + 0.25 * Math.cos(clockRef.current * 0.5 + 1.8));
+    const ambientY = origin.height * (0.52 + 0.22 * Math.sin(clockRef.current * 0.38 + 1.2));
+
+    const targetX = still ? origin.width * 0.35 : lit ? state.x - origin.left : ambientX;
+    const targetY = still ? origin.height * 0.38 : lit ? state.y - origin.top : ambientY;
 
     let n = 0;
-    let moving = false;
 
     for (const plate of plates.current) {
       const rect = plate.el.getBoundingClientRect();
@@ -299,29 +329,24 @@ function Foil({ host, still }: { host: HTMLElement; still: boolean }) {
       if (still) {
         plate.lightX = targetX;
         plate.lightY = targetY;
-        plate.intensity = 0.7;
+        plate.intensity = 0.9;
       } else {
         const centerX = x + rect.width / 2;
         const centerY = y + rect.height / 2;
 
         if (!plate.placed) {
-          plate.lightX = lit ? targetX : centerX - 120;
-          plate.lightY = lit ? targetY : centerY - 80;
+          plate.lightX = targetX;
+          plate.lightY = targetY;
           plate.placed = true;
         }
 
-        if (lit) {
-          // Plates farther from the pointer answer later, so the reflection travels instead of snapping.
-          const distance = Math.hypot(targetX - centerX, targetY - centerY);
-          const follow = 1 - Math.exp((-plate.rate / (1 + distance / 500)) * dt);
-          plate.lightX += (targetX - plate.lightX) * follow;
-          plate.lightY += (targetY - plate.lightY) * follow;
-          if (Math.abs(targetX - plate.lightX) + Math.abs(targetY - plate.lightY) > 0.3) moving = true;
-        }
+        const distance = Math.hypot(targetX - centerX, targetY - centerY);
+        const follow = 1 - Math.exp((-plate.rate / (1 + distance / 520)) * dt);
+        plate.lightX += (targetX - plate.lightX) * follow;
+        plate.lightY += (targetY - plate.lightY) * follow;
 
-        const targetIntensity = lit ? 1 : 0;
-        plate.intensity += (targetIntensity - plate.intensity) * (1 - Math.exp(-(lit ? plate.rate : 1.6) * dt));
-        if (Math.abs(targetIntensity - plate.intensity) > 0.004) moving = true;
+        const targetIntensity = lit ? 1 : 0.9;
+        plate.intensity += (targetIntensity - plate.intensity) * (1 - Math.exp(-(lit ? plate.rate : 2.5) * dt));
       }
 
       rects.setXYZW(n, x, y, rect.width, rect.height);
@@ -335,9 +360,10 @@ function Foil({ host, still }: { host: HTMLElement; still: boolean }) {
     lights.needsUpdate = true;
     radii.needsUpdate = true;
     (material.uniforms.uRes!.value as Vector2).set(size.width, size.height);
+    material.uniforms.uTime!.value = clockRef.current;
 
-    // Draw only while a light is still travelling.
-    if (moving) invalidate();
+    const controlsVisible = host.hasAttribute('data-visible');
+    if (!still && controlsVisible) invalidate();
   });
 
   return <mesh geometry={geometry} material={material} frustumCulled={false} />;
@@ -348,7 +374,7 @@ export default function FoilCanvas({ host, still }: { host: HTMLElement; still: 
     <Canvas
       frameloop="demand"
       dpr={[1, 2]}
-      gl={{ alpha: true, antialias: false, depth: false, stencil: false, powerPreference: 'high-performance' }}
+      gl={{ alpha: true, antialias: true, depth: false, stencil: false, powerPreference: 'high-performance' }}
       resize={{ scroll: false, debounce: 0 }}
       style={{ pointerEvents: 'none' }}
     >
