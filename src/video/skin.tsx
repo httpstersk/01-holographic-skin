@@ -29,9 +29,11 @@ export function VideoSkin({ children, className, renderPoster, renderThumbnail, 
     <ContainerPrimitive
       className={cn(
         'media-skin',
-        'relative block h-full w-full overflow-hidden rounded-media-player [--spacing:var(--media-spacing)] [font-family:var(--media-font-family,var(--media-holo-font))] text-media-sm tracking-[0.06em] uppercase text-media-foreground @container/media-root',
+        'relative block h-full w-full overflow-hidden rounded-media-player [--spacing:var(--media-spacing)] [font-family:var(--media-font-family,var(--media-holo-font))] text-media tracking-normal normal-case text-media-foreground @container/media-root',
         'outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-[-2px] focus-visible:outline-media-ring',
         'bg-black',
+        // System sans in sentence case, and room above the bar for captions.
+        '[--media-font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"SF_Pro_Text",Inter,system-ui,sans-serif] [--media-caption-controls-y:calc(var(--media-spacing)*-22)]',
         className
       )}
       data-theme="holo"

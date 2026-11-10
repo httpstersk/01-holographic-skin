@@ -85,15 +85,15 @@ export function FullscreenButton({
   );
 }
 
-export function ScreenControls() {
+export function ScreenControls({ className = 'size-9! rounded-[13px]!' }: { className?: ClassValue } = {}) {
   return (
     <>
       <AirPlayButton
-        className={'size-9! rounded-[13px]!'}
+        className={className}
         popupClassName={'[--media-tooltip-side-offset:calc(var(--media-spacing)*3)]!'}
       />
-      <CastButton className={'size-9! rounded-[13px]!'} />
-      <PiPButton className={'size-9! rounded-[13px]!'} />
+      <CastButton className={className} />
+      <PiPButton className={className} />
     </>
   );
 }

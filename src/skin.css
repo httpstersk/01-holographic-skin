@@ -346,3 +346,32 @@
   bottom: calc(var(--media-slider-chapter-start) + var(--media-spacing) * var(--media-chapter-inset-start));
   clip-path: inset(-1px);
 }
+
+/* Aurora: the bar is lit foil with black ink, so an active control flips to black with the foil showing through its ink. */
+.media-skin [data-aurora] button:is(:hover, :focus-visible, [aria-expanded="true"]) {
+  background-color: var(--media-background);
+  color: var(--media-foreground);
+}
+
+/*
+ * Controls grow with the player so a wide frame does not leave them small. The unit is redefined on the controls
+ * themselves, so every size, radius, and gap built on it scales together. Fullscreen has its own scale.
+ */
+.media-skin [data-scaled] {
+  --v-scale: 1;
+  --media-spacing: calc(var(--media-scale-unit, 16px) * var(--media-scale) * var(--v-scale) / 4);
+  --spacing: var(--media-spacing);
+  font-size: calc(var(--media-spacing) * 3.25);
+}
+
+@container media-root (width >= 52rem) {
+  .media-skin:not(:fullscreen) [data-scaled] {
+    --v-scale: 1.15;
+  }
+}
+
+@container media-root (width >= 72rem) {
+  .media-skin:not(:fullscreen) [data-scaled] {
+    --v-scale: 1.3;
+  }
+}

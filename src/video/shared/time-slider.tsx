@@ -4,15 +4,19 @@ import { Slider as SliderPrimitive, TimeSlider as TimeSliderPrimitive } from '@v
 
 import { cn } from '@/lib/resolve-class-name';
 
-export function TimeSlider({ audio = false, renderThumbnail }: ThumbnailSlot & { audio?: boolean } = {}) {
+/**
+ * Sizes come from `--trk` (track height), `--trk-hover`, `--thumb`, and `--hit` (the row the pointer can grab), set by
+ * the layout. The slider takes its light from the surface it sits on.
+ */
+export function TimeSlider({ className, renderThumbnail }: ThumbnailSlot & { className?: string } = {}) {
   return (
     <div className={'w-full min-w-0 flex-1'}>
       <TimeSliderPrimitive.Root
-        data-holo=""
         className={cn(
-          'group/slider relative flex h-6 min-w-12 flex-1 cursor-pointer touch-none items-center',
+          'group/slider relative flex h-(--hit,1.5rem) min-w-12 flex-1 cursor-pointer touch-none items-center',
           "pointer-coarse:before:absolute pointer-coarse:before:inset-x-0 pointer-coarse:before:-top-3 pointer-coarse:before:-bottom-2 pointer-coarse:before:content-['']",
-          'data-disabled:cursor-not-allowed data-disabled:opacity-40 forced-colors:data-disabled:text-[GrayText] forced-colors:data-disabled:opacity-100'
+          'data-disabled:cursor-not-allowed data-disabled:opacity-40 forced-colors:data-disabled:text-[GrayText] forced-colors:data-disabled:opacity-100',
+          className
         )}
         thumbAlignment="edge"
       >
@@ -29,20 +33,18 @@ export function TimeSlider({ audio = false, renderThumbnail }: ThumbnailSlot & {
             >
               <TimeSliderPrimitive.Track
                 className={cn(
-                  'absolute inset-x-0 isolate h-4 overflow-hidden rounded-full transition-[height] duration-150 ease-out forced-colors:h-1.5',
-                  'group-hover/slider:h-5 group-data-dragging/slider:h-5',
-                  'before:absolute before:inset-y-0 before:rounded-full before:bg-[#2a2a33] before:clip-media-chapter-track-x',
+                  'absolute inset-x-0 isolate h-(--trk,1rem) overflow-hidden rounded-(--trk-r,9999px) transition-[height] duration-150 ease-out forced-colors:h-1.5',
+                  'group-hover/slider:h-(--trk-hover,1.25rem) group-data-dragging/slider:h-(--trk-hover,1.25rem)',
+                  'before:absolute before:inset-y-0 before:rounded-[inherit] before:bg-(--trk-bg,#2a2a33) before:clip-media-chapter-track-x',
                   'forced-colors:before:bg-[Canvas] forced-colors:before:opacity-100! forced-colors:before:forced-color-adjust-none',
-                  'forced-colors:before:border forced-colors:before:border-solid forced-colors:before:border-[CanvasText]',
-                  audio && 'before:bg-media-muted! forced-colors:before:bg-[Canvas]!'
+                  'forced-colors:before:border forced-colors:before:border-solid forced-colors:before:border-[CanvasText]'
                 )}
               >
                 <TimeSliderPrimitive.Buffer
                   className={cn(
                     'absolute inset-y-0 rounded-inherit bg-[#757582] clip-media-x-[--media-slider-buffer]',
                     'forced-colors:opacity-100! forced-colors:forced-color-adjust-none',
-                    'forced-colors:bg-[repeating-linear-gradient(135deg,CanvasText_0px,CanvasText_1px,Canvas_1px,Canvas_3px)]',
-                    audio && 'bg-[#b3b3b3]!'
+                    'forced-colors:bg-[repeating-linear-gradient(135deg,CanvasText_0px,CanvasText_1px,Canvas_1px,Canvas_3px)]'
                   )}
                 />
                 <TimeSliderPrimitive.Fill
@@ -58,7 +60,7 @@ export function TimeSlider({ audio = false, renderThumbnail }: ThumbnailSlot & {
         />
         <TimeSliderPrimitive.Thumb
           className={cn(
-            'absolute left-[var(--media-slider-fill,0%)] size-5 transform-[translateX(-50%)] rounded-full border-2 border-media-background bg-media-foreground shadow-[0_2px_8px_rgb(0_0_0/0.6)]',
+            'absolute left-[var(--media-slider-fill,0%)] size-(--thumb,1.25rem) transform-[translateX(-50%)] rounded-full border-2 border-media-background bg-media-foreground shadow-[0_2px_8px_rgb(0_0_0/0.6)]',
             'transition-[transform,scale,height,width] duration-150 ease-out group-hover/slider:scale-115 group-data-dragging/slider:scale-125',
             'group-data-dragging/slider:left-(--media-slider-pointer)',
             'outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-media-ring focus-visible:shadow-[0_0_0_6px_var(--media-ring-contrast)]',
@@ -84,8 +86,7 @@ export function TimeSlider({ audio = false, renderThumbnail }: ThumbnailSlot & {
           </SliderPrimitive.Thumbnail.Root>
           <div
             className={cn(
-              'flex max-w-full min-w-0 justify-center rounded-media-control foil-edge-media px-2.5 py-1',
-              audio && 'w-auto! px-1.5! py-0.5 text-media-foreground media-high-contrast:outline forced-colors:outline'
+              'flex max-w-full min-w-0 justify-center rounded-media-control foil-edge-media px-2.5 py-1'
             )}
           >
             <div className={'flex max-w-full min-w-0 items-center gap-2'}>

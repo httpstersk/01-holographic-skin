@@ -305,7 +305,7 @@ export function SettingsMenu({
           'data-[side=top]:before:h-(--media-popup-side-offset) data-[side=bottom]:before:h-(--media-popup-side-offset)',
           'data-[side=left]:before:w-(--media-popup-side-offset) data-[side=right]:before:w-(--media-popup-side-offset)',
           'z-20 m-0 min-w-48 max-w-(--media-menu-available-width) overflow-hidden! rounded-media-popup foil-edge-media p-0 text-media-popover-foreground transition-media-menu-resize',
-          '[--media-popup-side-offset:var(--media-popover-side-offset)] [--media-popover-side-offset:calc(var(--media-spacing)*9)]',
+          '[--media-popup-side-offset:var(--media-popover-side-offset)] [--media-popover-side-offset:calc(var(--media-spacing)*4)]',
           'max-h-[min(var(--media-menu-available-height,--spacing(56)),--spacing(56))] overscroll-none',
           'h-(--media-menu-height) w-(--media-menu-width)',
           'media-high-contrast:outline forced-colors:outline'

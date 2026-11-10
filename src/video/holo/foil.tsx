@@ -13,6 +13,9 @@ import {
   Vector2,
 } from 'three';
 
+/** How fast the light drifts and the film's phase shifts, against a speed of 1. */
+const FLOW = 1.6;
+
 /** Most plates the layer lights at once. */
 const MAX_PLATES = 64;
 
@@ -63,6 +66,9 @@ const fragmentShader = /* glsl */ `
   varying float vRadius;
 
   const float BENTO_TONE = 3.0;
+  const float VIVID = 1.55;
+  const float GLEAM = 1.9;
+  const float BANDS = 1.4;
 
   float sdRoundBox(vec2 p, vec2 b, float r) {
     vec2 q = abs(p) - b + r;
@@ -97,10 +103,10 @@ const fragmentShader = /* glsl */ `
     // Continuous anisotropic diffraction phase (zero pixel noise)
     float tiltAngle = seed * 6.2831853 + BENTO_TONE * 0.65;
     vec2 tilt = vec2(cos(tiltAngle), sin(tiltAngle));
-    float phase = dot(toLight, vec2(0.0036, 0.0024))
+    float phase = (dot(toLight, vec2(0.0036, 0.0024))
                 + dot(toLight, tilt) * 0.0018
                 + dot(norm2D, vec2(0.28, -0.22))
-                + rimFactor * 0.24
+                + rimFactor * 0.24) * BANDS
                 + seed * 0.61
                 + uTime * 0.08;
 
@@ -117,13 +123,14 @@ const fragmentShader = /* glsl */ `
 
     // Pearlescent highlight shifts toward a secondary harmonic rather than bleaching to flat white
     vec3 pearlGleam = thinFilmSpectrum(phase + 0.25, BENTO_TONE + 1.0) * 0.35 + vec3(0.65);
-    holo = mix(holo, pearlGleam, specular * 0.55);
+    holo = mix(holo, pearlGleam, clamp(specular * 0.55 * GLEAM, 0.0, 1.0));
 
     // Subtle metallic silver-chrome base when unlit
     vec3 chrome = vec3(0.72, 0.76, 0.84) + 0.05 * cos(vPx.y * 0.02 + seed * 5.0);
 
     float energy = clamp(intensity * (0.65 + 0.35 * near), 0.0, 1.0);
     vec3 color = mix(chrome, holo, energy);
+    color = mix(vec3(dot(color, vec3(0.2126, 0.7152, 0.0722))), color, VIVID);
 
     // Ensure deep blues/violets stay luminous on dark cards without washing out saturation
     float luma = dot(color, vec3(0.2126, 0.7152, 0.0722));
@@ -305,7 +312,7 @@ function Foil({ host, still }: { host: HTMLElement; still: boolean }) {
 
   useFrame((_, delta) => {
     const dt = Math.min(delta, 0.05);
-    clockRef.current += dt;
+    clockRef.current += dt * FLOW;
     const origin = host.getBoundingClientRect();
     const state = pointer.current;
     const lit = still || state.hover || state.focus;

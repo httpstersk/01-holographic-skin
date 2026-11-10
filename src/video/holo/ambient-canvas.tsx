@@ -31,6 +31,7 @@ const fragmentShader = /* glsl */ `
   varying vec2 vUv;
 
   const float BENTO_TONE = 3.0;
+  const float AMBIENT = 1.4;   // overall strength of the idle light
 
   float sdRoundBox(vec2 p, vec2 b, float r) {
     vec2 q = abs(p) - b + r;
@@ -111,16 +112,19 @@ const fragmentShader = /* glsl */ `
       specularCrest * 0.15 +
       secondarySheet * 0.09 +
       domeLight * 0.08
-    ) * hoverBoost;
+    ) * hoverBoost * AMBIENT;
 
-    float edgeLuminance = (innerBevel * 0.16 + rimLine * 0.25) * (0.65 + 0.35 * domeLight);
+    float edgeLuminance = (innerBevel * 0.16 + rimLine * 0.25) * (0.65 + 0.35 * domeLight) * AMBIENT;
 
-    float totalAlpha = clamp((bodyLuminance + edgeLuminance) * uIdle, 0.0, 0.55);
+    float totalAlpha = clamp((bodyLuminance + edgeLuminance) * uIdle, 0.0, 0.55 * max(AMBIENT, 1.0));
     vec3 finalColor = surfaceColor * (bodyLuminance * uIdle) + rimColor * (edgeLuminance * uIdle);
 
     gl_FragColor = vec4(finalColor, totalAlpha);
   }
 `;
+
+/** How fast the light drifts, against a speed of 1. */
+const FLOW = 1.6;
 
 function AmbientHoloPlane({
   host,
@@ -223,7 +227,7 @@ function AmbientHoloPlane({
     state.hoverSmooth += (targetHover - state.hoverSmooth) * (1 - Math.exp(-5.0 * dt));
 
     if (!still) {
-      timeRef.current += dt;
+      timeRef.current += dt * FLOW;
     }
 
     // Autonomous slow figure-8 orbital drift across the video when pointer is not hovering
