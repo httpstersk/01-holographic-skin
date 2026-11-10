@@ -1,0 +1,89 @@
+@layer base.theme, base.preset, base.preferences;
+
+/*
+ * Holo: foil stamped on black card. Every control sits on an opaque plate, so legibility never depends on the picture.
+ * Whites and grays here are the foil mask: the shader layer in `video/holo/` multiplies its light into them, and without
+ * that layer they stay plain silver-white on black.
+ */
+@layer base.preset {
+  .media-skin[data-theme="holo"] {
+    /* Card and ink. */
+    --media-background: #0a0a0c;
+    --media-foreground: #ffffff;
+    --media-muted: #3d3d44;
+    --media-popover: #0a0a0c;
+    --media-popover-foreground: #ffffff;
+    --media-holo-edge: #6e6e78;
+    --media-button-highlight: #26262c;
+    --media-ring: #ffffff;
+    --media-ring-contrast: #000000;
+
+    /* Foil. The accent is the stamped fill; a brand accent replaces it and still takes the light. */
+    --media-accent: var(--media-accent-color, #ffffff);
+    --media-accent-foreground: var(--media-accent-text-color, #0a0a0c);
+    --media-primary: var(--media-accent);
+    --media-primary-foreground: var(--media-accent-text-color, #0a0a0c);
+    --media-holo-track: #8a8a92;
+    --media-holo-buffer: #b9b9c1;
+    /* Static foil for surfaces the shader cannot reach: popups in the top layer, indicators, the error dialog. */
+    --media-holo-gradient: linear-gradient(
+      115deg,
+      #9fe8ff 0%,
+      #c9b6ff 22%,
+      #ffb8e6 42%,
+      #ffe9a8 62%,
+      #a8ffd9 82%,
+      #9fe8ff 100%
+    );
+
+    /* Type. */
+    --media-holo-font: ui-monospace, "SF Mono", "JetBrains Mono", "IBM Plex Mono", Menlo, Consolas, monospace;
+
+    /* Shape: ovals for controls, a soft card for the dock, nothing blurred. */
+    --media-video-border-radius: var(--media-border-radius, 0px);
+    --media-control-radius: 9999px;
+    --media-controls-radius: calc(var(--media-spacing) * 4);
+    --media-menu-item-radius: calc(var(--media-spacing) * 2);
+    --media-popup-radius: calc(var(--media-spacing) * 3.5);
+    --media-dialog-radius: calc(var(--media-spacing) * 4);
+    --media-popover-boundary-offset: calc(var(--media-spacing) * 3);
+    --media-tooltip-boundary-offset: var(--media-popover-boundary-offset);
+    --media-scrollbar-thumb-color: #808080;
+    --media-shadow-surface: 0 10px 30px -8px rgb(0 0 0 / 0.6);
+    --media-shadow-surface-inset: none;
+    --media-shadow-thumb: 0 0 0 2px var(--media-background);
+    --media-backdrop-filter-surface: none;
+    --media-backdrop-filter-indicator: none;
+    --media-backdrop-filter-dialog: none;
+    --media-hidden-blur: 0px;
+    --media-hidden-popup-blur: 0px;
+    --media-hidden-popup-scale: 0.97;
+    --media-caption-controls-y: calc(var(--media-spacing) * -24);
+  }
+
+  @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+    .media-skin[data-theme="holo"] {
+      --media-background: #000000;
+      --media-popover: #000000;
+      --media-holo-edge: #ffffff;
+      --media-holo-track: #8a8a8a;
+      --media-holo-buffer: #bdbdbd;
+      --media-holo-gradient: linear-gradient(#ffffff, #ffffff);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .media-skin[data-theme="holo"] {
+      --media-background: Canvas;
+      --media-popover: Canvas;
+      --media-popover-foreground: CanvasText;
+      --media-foreground: CanvasText;
+      --media-holo-edge: CanvasText;
+      --media-accent: Highlight;
+      --media-primary: Highlight;
+      --media-primary-foreground: HighlightText;
+      --media-ring: Highlight;
+      --media-ring-contrast: Canvas;
+    }
+  }
+}
