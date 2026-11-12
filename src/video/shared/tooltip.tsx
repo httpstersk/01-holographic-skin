@@ -42,7 +42,7 @@ export function ButtonTooltip({
           'data-[side=right]:before:inset-y-0 data-[side=right]:before:right-full',
           'data-[side=top]:before:h-(--media-popup-side-offset) data-[side=bottom]:before:h-(--media-popup-side-offset)',
           'data-[side=left]:before:w-(--media-popup-side-offset) data-[side=right]:before:w-(--media-popup-side-offset)',
-          'pointer-events-none z-20 whitespace-nowrap rounded-media-control foil-edge-media px-2.5 py-1 text-media-popover-foreground transition-media-popup',
+          'pointer-events-none z-20 whitespace-nowrap rounded-media-control card-media px-2.5 py-1 text-media-popover-foreground transition-media-popup',
           '[--media-popup-side-offset:var(--media-tooltip-side-offset)] [--media-tooltip-side-offset:calc(var(--media-spacing)*4)]',
           'data-open:flex data-open:items-center data-open:gap-1',
           'media-high-contrast:outline forced-colors:outline',

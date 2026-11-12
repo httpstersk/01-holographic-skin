@@ -25,7 +25,7 @@ export function BufferingIndicator({ className }: { className?: ClassValue } = {
         )
       }
     >
-      <span className={'grid size-14.5 place-items-center rounded-media-pill foil-edge-media'}>
+      <span className={'grid size-14.5 place-items-center rounded-media-pill card-media'}>
         <SpinnerIconPrimitive className={'size-7'} />
       </span>
     </BufferingIndicatorPrimitive>

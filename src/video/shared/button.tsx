@@ -7,17 +7,21 @@ import { useTone } from './tone';
 export type ButtonProps = ComponentProps<'button'>;
 
 const PLATE = [
-  'border border-solid border-media-edge bg-media-background',
+  'bg-media-background',
   // Hover, focus, and an open menu fill the oval with foil and cut the icon out of it.
-  'hover:border-media-foreground hover:bg-media-foreground hover:text-media-background',
-  'focus-visible:border-media-foreground focus-visible:bg-media-foreground focus-visible:text-media-background',
-  'aria-expanded:border-media-foreground aria-expanded:bg-media-foreground aria-expanded:text-media-background',
-  'aria-disabled:hover:border-media-edge aria-disabled:hover:bg-media-background aria-disabled:hover:text-inherit',
+  'hover:bg-media-foreground hover:text-media-background',
+  'focus-visible:bg-media-foreground focus-visible:text-media-background',
+  'aria-expanded:bg-media-foreground aria-expanded:text-media-background',
+  'aria-disabled:hover:bg-media-background aria-disabled:hover:text-inherit',
 ];
 
+// On the foil bar a control is bare ink. Hover, focus, and an open menu flip it to a black disc with the foil in its icon.
 const GHOST = [
-  'border border-solid border-transparent bg-transparent',
-  'hover:bg-(--media-button-highlight) aria-expanded:bg-(--media-button-highlight) focus-visible:bg-(--media-button-highlight)',
+  'bg-transparent',
+  'hover:bg-media-background hover:text-media-foreground',
+  'focus-visible:bg-media-background focus-visible:text-media-foreground',
+  'aria-expanded:bg-media-background aria-expanded:text-media-foreground',
+  'aria-disabled:hover:bg-transparent aria-disabled:hover:text-inherit',
 ];
 
 export function Button({ className, ...props }: ButtonProps) {
@@ -34,13 +38,16 @@ export function Button({ className, ...props }: ButtonProps) {
         tone === 'plate'
           ? 'motion-safe:hover:-translate-y-0.5 motion-safe:hover:scale-108 motion-safe:active:translate-y-0 motion-safe:active:scale-92'
           : 'motion-safe:hover:scale-105 motion-safe:active:scale-95',
-        // A white ring on a black band, so it holds on bright and dark frames alike.
-        'focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-media-ring focus-visible:shadow-[0_0_0_6px_var(--media-ring-contrast)]',
+        // A ring inside the control, in the ink the focused control is drawn in, so it never overlaps a neighbor or needs a shadow.
+        'focus-visible:outline-2 focus-visible:outline-solid focus-visible:-outline-offset-5 focus-visible:outline-current',
+        'forced-colors:focus-visible:outline-offset-2 forced-colors:focus-visible:outline-[Highlight]',
         // A disabled control keeps its opaque plate and dims only what is stamped on it.
         'outline-none aria-disabled:cursor-not-allowed aria-disabled:*:opacity-40 disabled:cursor-not-allowed disabled:*:opacity-40',
         tone === 'plate' &&
           'media-high-contrast:hover:bg-media-foreground media-high-contrast:hover:text-media-background media-high-contrast:focus-visible:bg-media-foreground media-high-contrast:focus-visible:text-media-background',
-        'media-high-contrast:aria-expanded:bg-media-foreground media-high-contrast:aria-expanded:text-media-background',
+        tone === 'plate' &&
+          'media-high-contrast:aria-expanded:bg-media-foreground media-high-contrast:aria-expanded:text-media-background',
+        'media-high-contrast:border media-high-contrast:border-solid media-high-contrast:border-current',
         'forced-colors:border forced-colors:border-solid forced-colors:border-[ButtonText] forced-colors:bg-[ButtonFace] forced-colors:text-[ButtonText]',
         'forced-colors:forced-color-adjust-none',
         'forced-colors:hover:bg-[Highlight] forced-colors:hover:text-[HighlightText] forced-colors:focus-visible:bg-[Highlight] forced-colors:focus-visible:text-[HighlightText]',

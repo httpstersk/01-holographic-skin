@@ -35,7 +35,7 @@ export function VolumePopover({
           'data-[side=right]:[--media-popup-translate-x-distance:calc(var(--media-popup-translate-distance)*-1)]',
           'before:pointer-events-auto before:absolute',
           'data-[side=top]:before:inset-x-0 data-[side=top]:before:top-full data-[side=top]:before:h-3',
-          'z-20 h-28 w-8 rounded-media-control foil-edge-media px-3.5 py-3.5 text-media-popover-foreground transition-media-popup',
+          'z-20 h-28 w-8 rounded-media-control card-media px-3.5 py-3.5 text-media-popover-foreground transition-media-popup',
           '[--media-popup-side-offset:calc(var(--media-spacing)*3)] [--media-popover-side-offset:calc(var(--media-spacing)*3)]',
           'media-high-contrast:outline forced-colors:outline'
         )}
@@ -61,7 +61,7 @@ export function VolumePopover({
           </VolumeSlider.Track>
           <VolumeSlider.Thumb
             className={cn(
-              'absolute bottom-[var(--media-slider-fill,0%)] left-1/2 h-2 w-4 transform-[translate(-50%,50%)] rounded-media-pill bg-media-popover-foreground shadow-media-thumb',
+              'absolute bottom-[var(--media-slider-fill,0%)] left-1/2 h-2 w-4 transform-[translate(-50%,50%)] rounded-media-pill bg-media-popover-foreground',
               'outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-media-ring',
               'forced-colors:bg-[Highlight] forced-colors:forced-color-adjust-none',
               'forced-colors:border forced-colors:border-solid forced-colors:border-[CanvasText]'

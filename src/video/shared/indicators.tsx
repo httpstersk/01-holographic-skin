@@ -46,7 +46,7 @@ function StatusIndicator() {
     <StatusIndicatorPrimitive.Root
       actions={STATUS_ACTIONS}
       className={cn(
-        'pointer-events-none flex h-8 items-center gap-2 rounded-media-control foil-edge-media px-3',
+        'pointer-events-none flex h-8 items-center gap-2 rounded-media-control card-media px-3',
         'media-high-contrast:outline media-high-contrast:outline-current',
         'forced-colors:bg-[Canvas] forced-colors:text-[CanvasText] forced-colors:outline forced-colors:outline-[CanvasText]',
         'group/input-status col-start-2 row-start-1 self-start mt-3'
@@ -77,7 +77,7 @@ function VolumeIndicator() {
   return (
     <VolumeIndicatorPrimitive.Root
       className={cn(
-        'pointer-events-none flex h-8 items-center gap-2 rounded-media-control foil-edge-media px-3',
+        'pointer-events-none flex h-8 items-center gap-2 rounded-media-control card-media px-3',
         'media-high-contrast:outline media-high-contrast:outline-current',
         'forced-colors:bg-[Canvas] forced-colors:text-[CanvasText] forced-colors:outline forced-colors:outline-[CanvasText]',
         'group/volume-status col-start-2 row-start-1 mt-3 self-start'

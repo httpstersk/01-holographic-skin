@@ -16,7 +16,6 @@
     --media-holo-edge: #6e6e78;
     --media-button-highlight: #26262c;
     --media-ring: #ffffff;
-    --media-ring-contrast: #000000;
 
     /* Foil. The accent is the stamped fill; a brand accent replaces it and still takes the light. */
     --media-accent: var(--media-accent-color, #ffffff);
@@ -25,21 +24,11 @@
     --media-primary-foreground: var(--media-accent-text-color, #0a0a0c);
     --media-holo-track: #8a8a92;
     --media-holo-buffer: #b9b9c1;
-    /* Static foil for surfaces the shader cannot reach: popups in the top layer, indicators, the error dialog. */
-    --media-holo-gradient: linear-gradient(
-      115deg,
-      #9fe8ff 0%,
-      #c9b6ff 22%,
-      #ffb8e6 42%,
-      #ffe9a8 62%,
-      #a8ffd9 82%,
-      #9fe8ff 100%
-    );
 
     /* Type. */
     --media-holo-font: ui-monospace, "SF Mono", "JetBrains Mono", "IBM Plex Mono", Menlo, Consolas, monospace;
 
-    /* Shape: ovals for controls, a soft card for the dock, nothing blurred. */
+    /* Shape: ovals for controls, flat cards, no borders or shadows, nothing blurred. */
     --media-video-border-radius: var(--media-border-radius, 0px);
     --media-control-radius: 9999px;
     --media-controls-radius: calc(var(--media-spacing) * 4);
@@ -49,9 +38,9 @@
     --media-popover-boundary-offset: calc(var(--media-spacing) * 3);
     --media-tooltip-boundary-offset: var(--media-popover-boundary-offset);
     --media-scrollbar-thumb-color: #808080;
-    --media-shadow-surface: 0 10px 30px -8px rgb(0 0 0 / 0.6);
+    --media-shadow-surface: none;
     --media-shadow-surface-inset: none;
-    --media-shadow-thumb: 0 0 0 2px var(--media-background);
+    --media-shadow-thumb: none;
     --media-backdrop-filter-surface: none;
     --media-backdrop-filter-indicator: none;
     --media-backdrop-filter-dialog: none;
@@ -68,7 +57,6 @@
       --media-holo-edge: #ffffff;
       --media-holo-track: #8a8a8a;
       --media-holo-buffer: #bdbdbd;
-      --media-holo-gradient: linear-gradient(#ffffff, #ffffff);
     }
   }
 
@@ -83,7 +71,6 @@
       --media-primary: Highlight;
       --media-primary-foreground: HighlightText;
       --media-ring: Highlight;
-      --media-ring-contrast: Canvas;
     }
   }
 }

@@ -5,6 +5,7 @@ import { useCallback, useRef, useState } from 'react';
 import { DynamicDrawUsage, type InstancedBufferAttribute, type InstancedBufferGeometry } from 'three';
 
 import { FoilCanvas } from './foil-canvas';
+import { muxFoilFinish } from './shaders/foil';
 import { foilMaterialProps, useFoilMaterial } from './use-foil-material';
 
 const MAX_PLATES = 64;
@@ -34,7 +35,7 @@ function measurePlates(
 
 function FoilPlates({ host, still }: { host: HTMLElement; still: boolean }) {
   const invalidate = useThree((state) => state.invalidate);
-  const { attach, uniforms, advance } = useFoilMaterial(host, still);
+  const { attach, uniforms, advance } = useFoilMaterial(host, still, muxFoilFinish);
   const geometry = useRef<InstancedBufferGeometry | null>(null);
   const rects = useRef<InstancedBufferAttribute | null>(null);
   const radii = useRef<InstancedBufferAttribute | null>(null);

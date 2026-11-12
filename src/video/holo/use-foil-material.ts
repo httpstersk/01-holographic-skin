@@ -2,7 +2,7 @@ import { useThree } from '@react-three/fiber';
 import { useCallback, useRef, useState } from 'react';
 import { NoBlending, type RawShaderMaterial, Vector2, Vector4 } from 'three';
 
-import { etchedFoilFinish, foilFinishUniforms, foilFragmentShader, foilVertexShader } from './shaders/foil';
+import { type FoilFinish, foilFinishUniforms, foilFragmentShader, foilVertexShader } from './shaders/foil';
 
 export const foilMaterialProps = {
   vertexShader: foilVertexShader,
@@ -18,8 +18,8 @@ export const foilMaterialProps = {
 const center = { x: 0.5, y: 0.5 };
 type LightPoint = typeof center;
 
-function createUniforms() {
-  const { grating, metal, etched } = foilFinishUniforms(etchedFoilFinish);
+function createUniforms(finish: FoilFinish) {
+  const { grating, metal, etched } = foilFinishUniforms(finish);
   return {
     resolution: { value: new Vector2(1, 1) },
     lightPosition: { value: new Vector2(center.x, center.y) },
@@ -32,11 +32,11 @@ function createUniforms() {
   };
 }
 
-export function useFoilMaterial(host: HTMLElement, still: boolean) {
+export function useFoilMaterial(host: HTMLElement, still: boolean, finish: FoilFinish) {
   const invalidate = useThree((state) => state.invalidate);
   const material = useRef<RawShaderMaterial | null>(null);
   const light = useRef({ inView: false, pointer: null as LightPoint | null, focus: null as LightPoint | null });
-  const [uniforms] = useState(createUniforms);
+  const [uniforms] = useState(() => createUniforms(finish));
 
   const attach = useCallback(
     (instance: RawShaderMaterial | null) => {

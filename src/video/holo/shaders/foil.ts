@@ -16,6 +16,15 @@ export const etchedFoilFinish = {
   etched: true,
 } satisfies FoilFinish;
 
+/** The liquid-chrome film on the Mux mark and on the control bar. */
+export const muxFoilFinish = {
+  angle: -0.54,
+  thickness: 75,
+  grooves: 29,
+  tint: [1.19, 1.06, 0.81],
+  chroma: 0.59,
+} satisfies FoilFinish;
+
 export function foilFinishUniforms(finish: FoilFinish) {
   return {
     grating: [Math.cos(finish.angle), Math.sin(finish.angle), finish.grooves, finish.thickness] as const,

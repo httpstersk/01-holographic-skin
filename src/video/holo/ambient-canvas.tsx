@@ -4,6 +4,7 @@ import { useFrame } from '@react-three/fiber';
 import { useRef } from 'react';
 
 import { FoilCanvas } from './foil-canvas';
+import { etchedFoilFinish } from './shaders/foil';
 import { foilMaterialProps, useFoilMaterial } from './use-foil-material';
 
 const ambientShader = { FOIL_AMBIENT: 1 };
@@ -15,7 +16,7 @@ interface AmbientProps {
 }
 
 function AmbientFoil({ host, still, idle }: AmbientProps) {
-  const { attach, uniforms, advance } = useFoilMaterial(host, still);
+  const { attach, uniforms, advance } = useFoilMaterial(host, still, etchedFoilFinish);
   const opacity = useRef(idle ? 1 : 0);
 
   useFrame(({ size, invalidate }, delta) => {

@@ -10,7 +10,7 @@ export function SeekIndicator() {
   return (
     <SeekIndicatorPrimitive.Root
       className={cn(
-        'pointer-events-none flex items-center gap-2 rounded-media-controls foil-edge-media px-3 py-2',
+        'pointer-events-none flex items-center gap-2 rounded-media-controls card-media px-3 py-2',
         'media-high-contrast:outline media-high-contrast:outline-current',
         'forced-colors:bg-[Canvas] forced-colors:text-[CanvasText] forced-colors:outline forced-colors:outline-[CanvasText]',
         'group/seek-status col-start-2 row-start-1 mx-3 flex-col justify-center gap-1!',

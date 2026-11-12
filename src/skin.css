@@ -227,11 +227,9 @@
   color: var(--media-accent-foreground);
 }
 
-/* A card with a static foil hairline, for surfaces outside the shader layer: popups, indicators, dialogs. */
-@utility foil-edge-media {
-  border: 1px solid transparent;
-  background: linear-gradient(var(--media-popover), var(--media-popover)) padding-box, var(--media-holo-gradient) border-box;
-  box-shadow: var(--media-shadow-surface);
+/* A flat opaque card for surfaces outside the shader layer: popups, indicators, dialogs. It needs no border or shadow. */
+@utility card-media {
+  background-color: var(--media-popover);
 }
 
 @utility surface-media {
@@ -345,12 +343,6 @@
   top: calc(100% - var(--media-slider-chapter-end) + var(--media-spacing) * var(--media-chapter-inset-end));
   bottom: calc(var(--media-slider-chapter-start) + var(--media-spacing) * var(--media-chapter-inset-start));
   clip-path: inset(-1px);
-}
-
-/* Aurora: the bar is lit foil with black ink, so an active control flips to black with the foil showing through its ink. */
-.media-skin [data-aurora] button:is(:hover, :focus-visible, [aria-expanded="true"]) {
-  background-color: var(--media-background);
-  color: var(--media-foreground);
 }
 
 /*

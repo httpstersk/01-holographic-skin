@@ -5,8 +5,12 @@ import { Slider as SliderPrimitive, TimeSlider as TimeSliderPrimitive } from '@v
 import { cn } from '@/lib/resolve-class-name';
 
 /**
- * Sizes come from `--trk` (track height), `--trk-hover`, `--thumb`, and `--hit` (the row the pointer can grab), set by
- * the layout. The slider takes its light from the surface it sits on.
+ * Drawn in the ink of the surface it sits on. Progress reads by shape, not by color: a thin rail runs the whole
+ * duration, the buffered part is thicker, and the played part is the full track height and ends in the thumb. A brand
+ * accent, when set, colors the played part.
+ *
+ * Sizes come from `--trk` (track height), `--trk-hover`, `--buffer` and `--rail` (their heights within the track),
+ * `--thumb`, and `--hit` (the row the pointer can grab), set by the layout.
  */
 export function TimeSlider({ className, renderThumbnail }: ThumbnailSlot & { className?: string } = {}) {
   return (
@@ -35,21 +39,21 @@ export function TimeSlider({ className, renderThumbnail }: ThumbnailSlot & { cla
                 className={cn(
                   'absolute inset-x-0 isolate h-(--trk,1rem) overflow-hidden rounded-(--trk-r,9999px) transition-[height] duration-150 ease-out forced-colors:h-1.5',
                   'group-hover/slider:h-(--trk-hover,1.25rem) group-data-dragging/slider:h-(--trk-hover,1.25rem)',
-                  'before:absolute before:inset-y-0 before:rounded-[inherit] before:bg-(--trk-bg,#2a2a33) before:clip-media-chapter-track-x',
-                  'forced-colors:before:bg-[Canvas] forced-colors:before:opacity-100! forced-colors:before:forced-color-adjust-none',
+                  'before:absolute before:top-1/2 before:h-(--rail,100%) before:-translate-y-1/2 before:rounded-[inherit] before:bg-current before:clip-media-chapter-track-x',
+                  'forced-colors:before:h-full forced-colors:before:bg-[Canvas] forced-colors:before:opacity-100! forced-colors:before:forced-color-adjust-none',
                   'forced-colors:before:border forced-colors:before:border-solid forced-colors:before:border-[CanvasText]'
                 )}
               >
                 <TimeSliderPrimitive.Buffer
                   className={cn(
-                    'absolute inset-y-0 rounded-inherit bg-[#757582] clip-media-x-[--media-slider-buffer]',
-                    'forced-colors:opacity-100! forced-colors:forced-color-adjust-none',
+                    'absolute top-1/2 h-(--buffer,100%) -translate-y-1/2 rounded-inherit bg-current clip-media-x-[--media-slider-buffer]',
+                    'forced-colors:h-full forced-colors:opacity-100! forced-colors:forced-color-adjust-none',
                     'forced-colors:bg-[repeating-linear-gradient(135deg,CanvasText_0px,CanvasText_1px,Canvas_1px,Canvas_3px)]'
                   )}
                 />
                 <TimeSliderPrimitive.Fill
                   className={cn(
-                    'absolute inset-y-0 rounded-inherit bg-media-accent clip-media-x-[--media-slider-fill] forced-colors:forced-color-adjust-none',
+                    'absolute inset-y-0 rounded-inherit bg-(--media-accent-color,currentColor) clip-media-x-[--media-slider-fill] forced-colors:forced-color-adjust-none',
                     'group-data-dragging/slider:clip-media-x-[--media-slider-pointer]',
                     'forced-colors:bg-[Canvas] forced-colors:bg-[linear-gradient(Highlight,Highlight)]'
                   )}
@@ -60,10 +64,10 @@ export function TimeSlider({ className, renderThumbnail }: ThumbnailSlot & { cla
         />
         <TimeSliderPrimitive.Thumb
           className={cn(
-            'absolute left-[var(--media-slider-fill,0%)] size-(--thumb,1.25rem) transform-[translateX(-50%)] rounded-full border-2 border-media-background bg-media-foreground shadow-[0_2px_8px_rgb(0_0_0/0.6)]',
+            'absolute left-[var(--media-slider-fill,0%)] size-(--thumb,1.25rem) transform-[translateX(-50%)] rounded-full bg-current',
             'transition-[transform,scale,height,width] duration-150 ease-out group-hover/slider:scale-115 group-data-dragging/slider:scale-125',
             'group-data-dragging/slider:left-(--media-slider-pointer)',
-            'outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-media-ring focus-visible:shadow-[0_0_0_6px_var(--media-ring-contrast)]',
+            'outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-current',
             'forced-colors:bg-[Highlight] forced-colors:forced-color-adjust-none',
             'forced-colors:border forced-colors:border-solid forced-colors:border-[CanvasText]'
           )}
@@ -79,14 +83,14 @@ export function TimeSlider({ className, renderThumbnail }: ThumbnailSlot & { cla
         >
           <SliderPrimitive.Thumbnail.Root
             className={
-              'block max-w-39 overflow-hidden rounded-media-menu-item border border-solid border-media-edge bg-media-background'
+              'block max-w-39 overflow-hidden rounded-media-menu-item bg-media-background'
             }
           >
             <SliderPrimitive.Thumbnail.Image render={renderThumbnail} className={'block'} />
           </SliderPrimitive.Thumbnail.Root>
           <div
             className={cn(
-              'flex max-w-full min-w-0 justify-center rounded-media-control foil-edge-media px-2.5 py-1'
+              'flex max-w-full min-w-0 justify-center rounded-media-control card-media px-2.5 py-1'
             )}
           >
             <div className={'flex max-w-full min-w-0 items-center gap-2'}>
