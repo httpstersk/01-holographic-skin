@@ -5,15 +5,26 @@ import {
   RestartIcon as RestartIconPrimitive,
   PlayIcon as PlayIconPrimitive,
   PauseIcon as PauseIconPrimitive,
-} from './icons';
+} from '@/video/shared/icons';
 import type { ClassValue } from 'cn';
 
 import { cn, resolveClassName } from '@/lib/resolve-class-name';
 
-import { Button } from './button';
-import { ButtonTooltip } from './tooltip';
-import { BufferingIndicator } from './video-feedback';
+import { Button } from '@/video/shared/button';
+import { ButtonTooltip } from '@/video/shared/tooltip';
+import { BufferingIndicator } from '@/video/shared/video-feedback';
 
+/** Renders the compact play control for audio layouts. */
+export function AudioPlayButton() {
+  return (
+    <div className={'relative inline-flex'}>
+      <PlayButton />
+      <BufferingIndicator className={'z-20 bg-media-background'} />
+    </div>
+  );
+}
+
+/** Shows the playback action for the player's paused, playing, or ended state. */
 export function PlayButton({
   className,
   iconClassName,
@@ -23,8 +34,8 @@ export function PlayButton({
   return (
     <ButtonTooltip disabled={!tooltip}>
       <PlayButtonPrimitive
-        render={<Button />}
         className={(state) => cn('group/play', resolveClassName(className, state))}
+        render={<Button />}
         {...props}
       >
         <RestartIconPrimitive
@@ -47,14 +58,5 @@ export function PlayButton({
         />
       </PlayButtonPrimitive>
     </ButtonTooltip>
-  );
-}
-
-export function AudioPlayButton() {
-  return (
-    <div className={'relative inline-flex'}>
-      <PlayButton />
-      <BufferingIndicator className={'z-20 bg-media-background'} />
-    </div>
   );
 }

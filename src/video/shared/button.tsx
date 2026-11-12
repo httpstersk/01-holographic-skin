@@ -2,8 +2,9 @@ import type { ComponentProps } from "react";
 
 import { cn } from "@/lib/resolve-class-name";
 
-import { useTone } from "./tone";
+import { useTone } from "@/video/shared/tone";
 
+/** Accepts native button props so Video.js can provide its event handlers and ARIA state. */
 export type ButtonProps = ComponentProps<"button">;
 
 const PLATE = [
@@ -24,6 +25,7 @@ const GHOST = [
   "aria-disabled:hover:bg-transparent aria-disabled:hover:text-inherit",
 ];
 
+/** Applies the foil or ghost styling supplied by the current tone. */
 export function Button({ className, ...props }: ButtonProps) {
   const tone = useTone();
 

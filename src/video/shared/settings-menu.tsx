@@ -1,292 +1,161 @@
 /** @jsxImportSource react */
-import { audioText, captionsText, qualityText, settingsText, speedText } from '@videojs/core/i18n/text/menu';
-import { Text as TextPrimitive } from '@videojs/react';
-import { Menu } from '@videojs/react';
+
 import {
-  ChevronIcon as ChevronIconPrimitive,
-  SwitchesIcon as SwitchesIconPrimitive,
-  SpeechIcon as SpeechIconPrimitive,
-  SpeedIcon as SpeedIconPrimitive,
-  CaptionsOffIcon as CaptionsOffIconPrimitive,
-  GearIcon as GearIconPrimitive,
-} from './icons';
-import { AudioTrackRadioGroup } from '@videojs/react/ui/audio-track-radio-group';
-import { CaptionsRadioGroup } from '@videojs/react/ui/captions-radio-group';
-import { PlaybackRateRadioGroup } from '@videojs/react/ui/playback-rate-radio-group';
-import { QualityRadioGroup } from '@videojs/react/ui/quality-radio-group';
+  audioText,
+  backText,
+  captionsText,
+  qualityText,
+  settingsText,
+  speedText,
+} from "@videojs/core/i18n/text/menu";
+import { Menu, Text } from "@videojs/react";
+import { AudioTrackRadioGroup } from "@videojs/react/ui/audio-track-radio-group";
+import { CaptionsRadioGroup } from "@videojs/react/ui/captions-radio-group";
+import { PlaybackRateRadioGroup } from "@videojs/react/ui/playback-rate-radio-group";
+import { QualityRadioGroup } from "@videojs/react/ui/quality-radio-group";
+import type { ClassValue } from "cn";
+import type { ComponentType, ReactNode } from "react";
 
-import type { ClassValue } from 'cn';
+import { cn } from "@/lib/resolve-class-name";
+import { Button } from "@/video/shared/button";
+import {
+  CaptionsOffIcon,
+  ChevronIcon,
+  GearIcon,
+  SpeechIcon,
+  SpeedIcon,
+  SwitchesIcon,
+} from "@/video/shared/icons";
+import { RadioItem } from "@/video/shared/menu-item";
+import { ButtonTooltip } from "@/video/shared/tooltip";
 
-import { cn } from '@/lib/resolve-class-name';
+const contentClass = cn(
+  "absolute max-h-full overflow-auto overscroll-none outline-hidden",
+  "[clip-path:inset(0)]",
+  "flex flex-col gap-1! p-1.5 not-data-submenu:inset-x-0 not-data-submenu:top-0",
+  "not-data-submenu:data-child-open:transform-[translateX(-100%)]",
+  "not-data-submenu:data-child-open:rtl:transform-[translateX(100%)]",
+  "not-data-submenu:data-child-open:[clip-path:inset(0_0_0_100%)] not-data-submenu:data-child-open:rtl:[clip-path:inset(0_100%_0_0)]",
+  "data-submenu:inset-x-0 data-submenu:top-0 data-submenu:z-10",
+);
+const itemClass = cn(
+  "flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-media-menu-item min-h-(--holo-menu-item-height) w-full shrink-0 bg-media-background bg-clip-padding px-2 py-0 text-start",
+  "focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-[-2px] focus-visible:outline-current",
+  "data-highlighted:bg-(--media-button-highlight) media-high-contrast:data-highlighted:highlight-media forced-colors:data-highlighted:highlight-media",
+);
+const optionsClass = "flex flex-col gap-1";
+const selectionClass = "max-w-24 truncate";
+const triggerClass = cn(
+  itemClass,
+  "data-[availability=unavailable]:hidden data-[availability=unsupported]:hidden",
+);
 
-import { Button } from './button';
-import { RadioItem } from './menu-item';
-import { ButtonTooltip } from './tooltip';
+/** Translation entry for a settings submenu. */
+type MenuLabel = typeof audioText | typeof captionsText | typeof qualityText | typeof speedText;
 
-function MenuChevron({ back = false }: { back?: boolean } = {}) {
-  return (
-    <ChevronIconPrimitive
-      className={
-        back
-          ? 'size-4 shrink-0 transform-[rotate(180deg)] rtl:transform-none opacity-70'
-          : 'size-4 shrink-0 opacity-70 rtl:transform-[scaleX(-1)]'
-      }
-    />
-  );
-}
-
-function QualityMenu() {
-  return (
-    <Menu.Root>
-      <QualityRadioGroup.Root>
-        <Menu.Trigger
-          className={cn(
-            'flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-media-menu-item min-h-(--holo-menu-item-height) w-full shrink-0 bg-media-background bg-clip-padding px-2 py-0 text-start',
-            'data-[availability=unavailable]:hidden data-[availability=unsupported]:hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-[-2px] focus-visible:outline-current',
-            'data-highlighted:bg-(--media-button-highlight) media-high-contrast:data-highlighted:highlight-media forced-colors:data-highlighted:highlight-media'
-          )}
-        >
-          <SwitchesIconPrimitive className={'size-4.5 shrink-0 opacity-70'} />
-          <TextPrimitive token={qualityText.key}>{qualityText.text}</TextPrimitive>
-          <span className={'ms-auto inline-flex min-w-0 items-center gap-1 ps-2 opacity-70'}>
-            <QualityRadioGroup.Value className={'max-w-24 truncate'} />
-            <MenuChevron />
-          </span>
-        </Menu.Trigger>
-        <Menu.Content
-          className={cn(
-            'absolute max-h-full overflow-auto overscroll-none outline-hidden',
-            '[clip-path:inset(0)]',
-            'flex flex-col gap-1! p-1.5 not-data-submenu:inset-x-0 not-data-submenu:top-0',
-            'not-data-submenu:data-child-open:transform-[translateX(-100%)]',
-            'not-data-submenu:data-child-open:rtl:transform-[translateX(100%)]',
-            'not-data-submenu:data-child-open:[clip-path:inset(0_0_0_100%)] not-data-submenu:data-child-open:rtl:[clip-path:inset(0_100%_0_0)]',
-            'data-submenu:inset-x-0 data-submenu:top-0 data-submenu:z-10'
-          )}
-        >
-          <Menu.Item
-            className={cn(
-              'flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-media-menu-item min-h-(--holo-menu-item-height) w-full shrink-0 bg-media-background bg-clip-padding px-2 py-0 text-start',
-              'focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-[-2px] focus-visible:outline-current',
-              'data-highlighted:bg-(--media-button-highlight) media-high-contrast:data-highlighted:highlight-media forced-colors:data-highlighted:highlight-media'
-            )}
-          >
-            <MenuChevron back />
-            <TextPrimitive token={qualityText.key}>{qualityText.text}</TextPrimitive>
-          </Menu.Item>
-          <Menu.Separator className={'hidden'} />
-          <QualityRadioGroup.Options
-            className={'flex flex-col gap-1'}
-            renderItem={(props, item) => (
-              <RadioItem {...props}>
-                <span>
-                  <span>{item.label}</span>
-                  {item.tier ? (
-                    <sup className={'ps-0.5 pt-px text-media-sm leading-none opacity-70'}>{item.tier}</sup>
-                  ) : null}
-                </span>
-                {item.badge ? (
-                  <span className={'rounded-media-pill bg-media-muted px-1.5 text-media-sm'}>{item.badge}</span>
-                ) : null}
-              </RadioItem>
-            )}
-          ></QualityRadioGroup.Options>
-        </Menu.Content>
-      </QualityRadioGroup.Root>
-    </Menu.Root>
-  );
-}
-
-function AudioTrackMenu() {
-  return (
-    <Menu.Root>
-      <AudioTrackRadioGroup.Root>
-        <Menu.Trigger
-          className={cn(
-            'flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-media-menu-item min-h-(--holo-menu-item-height) w-full shrink-0 bg-media-background bg-clip-padding px-2 py-0 text-start',
-            'data-[availability=unavailable]:hidden data-[availability=unsupported]:hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-[-2px] focus-visible:outline-current',
-            'data-highlighted:bg-(--media-button-highlight) media-high-contrast:data-highlighted:highlight-media forced-colors:data-highlighted:highlight-media'
-          )}
-        >
-          <SpeechIconPrimitive className={'size-4.5 shrink-0 opacity-70'} />
-          <TextPrimitive token={audioText.key}>{audioText.text}</TextPrimitive>
-          <span className={'ms-auto inline-flex min-w-0 items-center gap-1 ps-2 opacity-70'}>
-            <AudioTrackRadioGroup.Value className={'max-w-24 truncate'} />
-            <MenuChevron />
-          </span>
-        </Menu.Trigger>
-        <Menu.Content
-          className={cn(
-            'absolute max-h-full overflow-auto overscroll-none outline-hidden',
-            '[clip-path:inset(0)]',
-            'flex flex-col gap-1! p-1.5 not-data-submenu:inset-x-0 not-data-submenu:top-0',
-            'not-data-submenu:data-child-open:transform-[translateX(-100%)]',
-            'not-data-submenu:data-child-open:rtl:transform-[translateX(100%)]',
-            'not-data-submenu:data-child-open:[clip-path:inset(0_0_0_100%)] not-data-submenu:data-child-open:rtl:[clip-path:inset(0_100%_0_0)]',
-            'data-submenu:inset-x-0 data-submenu:top-0 data-submenu:z-10'
-          )}
-        >
-          <Menu.Item
-            className={cn(
-              'flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-media-menu-item min-h-(--holo-menu-item-height) w-full shrink-0 bg-media-background bg-clip-padding px-2 py-0 text-start',
-              'focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-[-2px] focus-visible:outline-current',
-              'data-highlighted:bg-(--media-button-highlight) media-high-contrast:data-highlighted:highlight-media forced-colors:data-highlighted:highlight-media'
-            )}
-          >
-            <MenuChevron back />
-            <TextPrimitive token={audioText.key}>{audioText.text}</TextPrimitive>
-          </Menu.Item>
-          <Menu.Separator className={'hidden'} />
-          <AudioTrackRadioGroup.Options
-            className={'flex flex-col gap-1'}
-            renderItem={(props, item) => (
-              <RadioItem {...props}>
-                <span>{item.label}</span>
-              </RadioItem>
-            )}
-          ></AudioTrackRadioGroup.Options>
-        </Menu.Content>
-      </AudioTrackRadioGroup.Root>
-    </Menu.Root>
-  );
-}
-
-function PlaybackRateMenu() {
-  return (
-    <Menu.Root>
-      <PlaybackRateRadioGroup.Root>
-        <Menu.Trigger
-          className={cn(
-            'flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-media-menu-item min-h-(--holo-menu-item-height) w-full shrink-0 bg-media-background bg-clip-padding px-2 py-0 text-start',
-            'data-[availability=unavailable]:hidden data-[availability=unsupported]:hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-[-2px] focus-visible:outline-current',
-            'data-highlighted:bg-(--media-button-highlight) media-high-contrast:data-highlighted:highlight-media forced-colors:data-highlighted:highlight-media'
-          )}
-        >
-          <SpeedIconPrimitive className={'size-4.5 shrink-0 opacity-70'} />
-          <TextPrimitive token={speedText.key}>{speedText.text}</TextPrimitive>
-          <span className={'ms-auto inline-flex min-w-0 items-center gap-1 ps-2 opacity-70'}>
-            <PlaybackRateRadioGroup.Value className={'max-w-24 truncate'} />
-            <MenuChevron />
-          </span>
-        </Menu.Trigger>
-        <Menu.Content
-          className={cn(
-            'absolute max-h-full overflow-auto overscroll-none outline-hidden',
-            '[clip-path:inset(0)]',
-            'flex flex-col gap-1! p-1.5 not-data-submenu:inset-x-0 not-data-submenu:top-0',
-            'not-data-submenu:data-child-open:transform-[translateX(-100%)]',
-            'not-data-submenu:data-child-open:rtl:transform-[translateX(100%)]',
-            'not-data-submenu:data-child-open:[clip-path:inset(0_0_0_100%)] not-data-submenu:data-child-open:rtl:[clip-path:inset(0_100%_0_0)]',
-            'data-submenu:inset-x-0 data-submenu:top-0 data-submenu:z-10'
-          )}
-        >
-          <Menu.Item
-            className={cn(
-              'flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-media-menu-item min-h-(--holo-menu-item-height) w-full shrink-0 bg-media-background bg-clip-padding px-2 py-0 text-start',
-              'focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-[-2px] focus-visible:outline-current',
-              'data-highlighted:bg-(--media-button-highlight) media-high-contrast:data-highlighted:highlight-media forced-colors:data-highlighted:highlight-media'
-            )}
-          >
-            <MenuChevron back />
-            <TextPrimitive token={speedText.key}>{speedText.text}</TextPrimitive>
-          </Menu.Item>
-          <Menu.Separator className={'hidden'} />
-          <PlaybackRateRadioGroup.Options
-            className={'flex flex-col gap-1'}
-            renderItem={(props, item) => (
-              <RadioItem {...props}>
-                <span>{item.label}</span>
-              </RadioItem>
-            )}
-          ></PlaybackRateRadioGroup.Options>
-        </Menu.Content>
-      </PlaybackRateRadioGroup.Root>
-    </Menu.Root>
-  );
-}
-
-function CaptionsMenu() {
-  return (
-    <Menu.Root>
-      <CaptionsRadioGroup.Root>
-        <Menu.Trigger
-          className={cn(
-            'flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-media-menu-item min-h-(--holo-menu-item-height) w-full shrink-0 bg-media-background bg-clip-padding px-2 py-0 text-start',
-            'data-[availability=unavailable]:hidden data-[availability=unsupported]:hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-[-2px] focus-visible:outline-current',
-            'data-highlighted:bg-(--media-button-highlight) media-high-contrast:data-highlighted:highlight-media forced-colors:data-highlighted:highlight-media'
-          )}
-        >
-          <CaptionsOffIconPrimitive className={'size-4.5 shrink-0 opacity-70'} />
-          <TextPrimitive token={captionsText.key}>{captionsText.text}</TextPrimitive>
-          <span className={'ms-auto inline-flex min-w-0 items-center gap-1 ps-2 opacity-70'}>
-            <CaptionsRadioGroup.Value className={'max-w-24 truncate'} />
-            <MenuChevron />
-          </span>
-        </Menu.Trigger>
-        <Menu.Content
-          className={cn(
-            'absolute max-h-full overflow-auto overscroll-none outline-hidden',
-            '[clip-path:inset(0)]',
-            'flex flex-col gap-1! p-1.5 not-data-submenu:inset-x-0 not-data-submenu:top-0',
-            'not-data-submenu:data-child-open:transform-[translateX(-100%)]',
-            'not-data-submenu:data-child-open:rtl:transform-[translateX(100%)]',
-            'not-data-submenu:data-child-open:[clip-path:inset(0_0_0_100%)] not-data-submenu:data-child-open:rtl:[clip-path:inset(0_100%_0_0)]',
-            'data-submenu:inset-x-0 data-submenu:top-0 data-submenu:z-10'
-          )}
-        >
-          <Menu.Item
-            className={cn(
-              'flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-media-menu-item min-h-(--holo-menu-item-height) w-full shrink-0 bg-media-background bg-clip-padding px-2 py-0 text-start',
-              'focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-[-2px] focus-visible:outline-current',
-              'data-highlighted:bg-(--media-button-highlight) media-high-contrast:data-highlighted:highlight-media forced-colors:data-highlighted:highlight-media'
-            )}
-          >
-            <MenuChevron back />
-            <TextPrimitive token={captionsText.key}>{captionsText.text}</TextPrimitive>
-          </Menu.Item>
-          <Menu.Separator className={'hidden'} />
-          <CaptionsRadioGroup.Options
-            className={'flex flex-col gap-1'}
-            renderItem={(props, item) => (
-              <RadioItem {...props}>
-                <span>{item.label}</span>
-              </RadioItem>
-            )}
-          ></CaptionsRadioGroup.Options>
-        </Menu.Content>
-      </CaptionsRadioGroup.Root>
-    </Menu.Root>
-  );
-}
-
-export function SettingsMenu({
-  buttonClassName,
-  iconClassName,
-  side = 'top',
-  align = 'center',
-}: {
+/** Options accepted by the player settings trigger. */
+interface SettingsMenuProps {
+  align?: Menu.RootProps["align"];
   buttonClassName?: ClassValue;
   iconClassName?: ClassValue;
-  side?: 'top' | 'bottom' | 'left' | 'right';
-  align?: 'start' | 'center' | 'end';
-} = {}) {
+  side?: Menu.RootProps["side"];
+}
+
+/** Option-group parts supplied by Video.js for a single setting. */
+interface OptionGroup {
+  Options: ComponentType<{ className: string; renderItem: typeof renderOption }>;
+  Root: ComponentType<{ children?: ReactNode }>;
+  Value: ComponentType<{ className: string }>;
+}
+
+/** Display metadata shared by all playback options. */
+interface SettingOption {
+  badge?: string | undefined;
+  label: string;
+  tier?: string | undefined;
+}
+
+/** The localized group, glyph, and option renderer for a submenu. */
+interface SubmenuProps {
+  group: OptionGroup;
+  icon: ComponentType<{ className: string }>;
+  label: MenuLabel;
+}
+
+const settings = [
+  { group: QualityRadioGroup, icon: SwitchesIcon, label: qualityText },
+  { group: AudioTrackRadioGroup, icon: SpeechIcon, label: audioText },
+  { group: PlaybackRateRadioGroup, icon: SpeedIcon, label: speedText },
+  { group: CaptionsRadioGroup, icon: CaptionsOffIcon, label: captionsText },
+] satisfies readonly SubmenuProps[];
+
+/** Renders the submenu and its first item, which Video.js uses to return to the parent. */
+function Content({ children, label }: { children: ReactNode; label: MenuLabel }) {
   return (
-    <Menu.Root side={side} align={align}>
-      <ButtonTooltip label={<TextPrimitive token={settingsText.key}>{settingsText.text}</TextPrimitive>}>
-        <Menu.Trigger render={<Button className={cn('group/settings', buttonClassName)} />}>
-          <GearIconPrimitive
+    <Menu.Content className={contentClass}>
+      <Menu.Item className={itemClass}>
+        <MenuChevron back />
+        <Text className="sr-only" token={backText.key}>{backText.text}</Text>
+        <Text token={label.key}>{label.text}</Text>
+      </Menu.Item>
+      <Menu.Separator className="hidden" />
+      {children}
+    </Menu.Content>
+  );
+}
+
+/** Indicates the submenu direction in both left-to-right and right-to-left layouts. */
+function MenuChevron({ back = false }: { back?: boolean }) {
+  const direction = back ? "rotate-180 rtl:rotate-0" : "rtl:scale-x-[-1]";
+  return <ChevronIcon className={cn("size-4 shrink-0 opacity-70", direction)} />;
+}
+
+/** Renders an option and preserves the interaction props supplied by Video.js. */
+function renderOption(props: Menu.RadioItemProps, { badge, label, tier }: SettingOption) {
+  return (
+    <RadioItem {...props}>
+      <span>
+        {label}
+        {tier && <sup className="ps-0.5 pt-px text-media-sm leading-none opacity-70">{tier}</sup>}
+      </span>
+      {badge && <span className="rounded-media-pill bg-media-muted px-1.5 text-media-sm">{badge}</span>}
+    </RadioItem>
+  );
+}
+
+/** Keeps the trigger and content inside the same Video.js option group. */
+function Root({ children, group: Group }: {
+  children: ReactNode;
+  group: OptionGroup["Root"];
+}) {
+  return (
+    <Menu.Root>
+      <Group>{children}</Group>
+    </Menu.Root>
+  );
+}
+
+/** Opens the localized playback settings in visual and keyboard navigation order. */
+export function SettingsMenu({
+  align = "center",
+  buttonClassName,
+  iconClassName,
+  side = "top",
+}: SettingsMenuProps = {}) {
+  return (
+    <Menu.Root align={align} side={side}>
+      <ButtonTooltip label={<Text token={settingsText.key}>{settingsText.text}</Text>}>
+        <Menu.Trigger className={cn("group/settings", buttonClassName)} render={<Button />}>
+          <GearIcon
             className={cn(
-              'col-start-1 row-start-1 size-4.5 motion-safe:transition-transform duration-media-base ease-out motion-safe:group-hover/settings:rotate-45',
-              iconClassName
+              "col-start-1 row-start-1 size-4.5 motion-safe:transition-transform duration-media-base ease-out motion-safe:group-hover/settings:rotate-45",
+              iconClassName,
             )}
           />
-          <TextPrimitive className={'sr-only'} token={settingsText.key}>
-            {settingsText.text}
-          </TextPrimitive>
+          <Text className="sr-only" token={settingsText.key}>{settingsText.text}</Text>
         </Menu.Trigger>
       </ButtonTooltip>
       <Menu.Popup
-        keepMounted
         className={cn(
           'm-0 overflow-visible border-0 text-inherit',
           'media-transitioning:opacity-0 media-transitioning:blur-media-hidden-popup media-transitioning:scale-media-hidden-popup',
@@ -311,24 +180,53 @@ export function SettingsMenu({
           'motion-reduce:transition-none',
           'media-high-contrast:outline forced-colors:outline'
         )}
+        keepMounted
       >
-        <Menu.Content
-          className={cn(
-            'absolute max-h-full overflow-auto overscroll-none outline-hidden',
-            '[clip-path:inset(0)]',
-            'flex flex-col gap-1! p-1.5 not-data-submenu:inset-x-0 not-data-submenu:top-0',
-            'not-data-submenu:data-child-open:transform-[translateX(-100%)]',
-            'not-data-submenu:data-child-open:rtl:transform-[translateX(100%)]',
-            'not-data-submenu:data-child-open:[clip-path:inset(0_0_0_100%)] not-data-submenu:data-child-open:rtl:[clip-path:inset(0_100%_0_0)]',
-            'data-submenu:inset-x-0 data-submenu:top-0 data-submenu:z-10'
-          )}
-        >
-          <QualityMenu />
-          <AudioTrackMenu />
-          <PlaybackRateMenu />
-          <CaptionsMenu />
+        <Menu.Content className={contentClass}>
+          {settings.map((setting) => (
+            <SettingsSubmenu key={setting.label.key} {...setting} />
+          ))}
         </Menu.Content>
       </Menu.Popup>
     </Menu.Root>
   );
 }
+
+/** Composes the menu controls with the native option group's state and selection. */
+function SettingsSubmenu({ group: { Options, Root, Value }, icon, label }: SubmenuProps) {
+  return (
+    <Submenu.Root group={Root}>
+      <Submenu.Trigger icon={icon} label={label}>
+        <Value className={selectionClass} />
+      </Submenu.Trigger>
+      <Submenu.Content label={label}>
+        <Options className={optionsClass} renderItem={renderOption} />
+      </Submenu.Content>
+    </Submenu.Root>
+  );
+}
+
+/** Opens a submenu and shows the current selection. */
+function Trigger({
+  children,
+  icon: Icon,
+  label,
+}: {
+  children: ReactNode;
+  icon: ComponentType<{ className: string }>;
+  label: MenuLabel;
+}) {
+  return (
+    <Menu.Trigger className={triggerClass}>
+      <Icon className="size-4.5 shrink-0 opacity-70" />
+      <Text token={label.key}>{label.text}</Text>
+      <span className="ms-auto inline-flex min-w-0 items-center gap-1 ps-2 opacity-70">
+        {children}
+        <MenuChevron />
+      </span>
+    </Menu.Trigger>
+  );
+}
+
+/** Shared parts for the four playback settings submenus. */
+const Submenu = { Content, Root, Trigger };

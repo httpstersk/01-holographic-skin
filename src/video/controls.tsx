@@ -4,20 +4,20 @@ import { Controls, SeekButton, Tooltip } from "@videojs/react";
 
 import { cn } from "@/lib/resolve-class-name";
 
-import { HoloFoil } from "./holo/foil-layer";
-import { Button } from "./shared/button";
-import { CaptionsToggle } from "./shared/captions-button";
-import { SeekBackIcon, SeekForwardIcon } from "./shared/icons";
-import { MuteButton } from "./shared/mute-button";
-import { PlayButton } from "./shared/play-button";
-import { FullscreenButton, ScreenControls } from "./shared/screen-controls";
-import { SettingsMenu } from "./shared/settings-menu";
-import { TimeElapsed, TimeTotal } from "./shared/time-display";
-import { type ThumbnailSlot, TimeSlider } from "./shared/time-slider";
-import { Tone } from "./shared/tone";
-import { ButtonTooltip } from "./shared/tooltip";
-import { VolumePopover } from "./shared/volume-popover";
-import { VideoBufferingIndicator } from "./shared/video-feedback";
+import { HoloFoil } from "@/video/holo/foil-layer";
+import { Button } from "@/video/shared/button";
+import { CaptionsToggle } from "@/video/shared/captions-button";
+import { SeekBackIcon, SeekForwardIcon } from "@/video/shared/icons";
+import { MuteButton } from "@/video/shared/mute-button";
+import { PlayButton } from "@/video/shared/play-button";
+import { FullscreenButton, ScreenControls } from "@/video/shared/screen-controls";
+import { SettingsMenu } from "@/video/shared/settings-menu";
+import { TimeElapsed, TimeTotal } from "@/video/shared/time-display";
+import { type ThumbnailSlot, TimeSlider } from "@/video/shared/time-slider";
+import { Tone } from "@/video/shared/tone";
+import { ButtonTooltip } from "@/video/shared/tooltip";
+import { VolumePopover } from "@/video/shared/volume-popover";
+import { VideoBufferingIndicator } from "@/video/shared/video-feedback";
 
 const UTILITY = "size-(--holo-utility-size)! rounded-full!";
 const SEEK = "size-[max(44px,--spacing(11))]! rounded-full!";
@@ -30,15 +30,16 @@ const SCRUBBER_BAR =
 const SLIDER =
   "mx-2 media-sm:mx-3 [--hit:var(--holo-scrubber-height)] [--trk:var(--spacing)] [--trk-hover:calc(var(--spacing)*1.5)] [--buffer:calc(var(--spacing)*0.75)] [--rail:max(2px,calc(var(--spacing)*0.5))] [--thumb:calc(var(--spacing)*3)]";
 
+/** Renders the same seek control for either direction with a signed time offset. */
 function SeekTen({ direction }: { direction: -1 | 1 }) {
   const Icon = direction < 0 ? SeekBackIcon : SeekForwardIcon;
   return (
     <SeekButton
-      data-holo-jump=""
-      data-holo-interactive=""
-      seconds={direction * 10}
-      render={<Button />}
       className={SEEK}
+      data-holo-interactive=""
+      data-holo-jump=""
+      render={<Button />}
+      seconds={direction * 10}
     >
       <Icon className="col-start-1 row-start-1 size-6" />
       <span
@@ -62,27 +63,27 @@ export function VideoControls({ renderThumbnail }: ThumbnailSlot = {}) {
       {/* No scrim over the picture: every control carries its own opaque plate. */}
       <VideoBufferingIndicator />
       <Controls.Content
-        data-scaled=""
-        data-holo-controls=""
         className={cn(
           // Isolated, so the foil layer multiplies into the controls and never into the picture.
           "pointer-events-none absolute inset-0 z-30 isolate",
           "transition-opacity duration-media-controls ease-out has-[:focus-visible]:duration-0 motion-reduce:transition-none",
         )}
+        data-holo-controls=""
+        data-scaled=""
       >
         <Tooltip.Provider>
           <ScreenControls />
-          <div data-holo-playback="" className="absolute grid -translate-y-1/2 place-items-center">
+          <div className="absolute grid -translate-y-1/2 place-items-center" data-holo-playback="">
             <div className="flex items-center gap-3 media-md:gap-6">
               <SeekTen direction={-1} />
-              <PlayButton data-holo-interactive="" iconClassName="size-8!" className={PLAY} />
+              <PlayButton className={PLAY} data-holo-interactive="" iconClassName="size-8!" />
               <SeekTen direction={1} />
             </div>
           </div>
           <div
+            className="absolute flex items-center"
             data-holo-interactive=""
             data-holo-utilities=""
-            className="absolute flex items-center"
           >
             <ButtonTooltip>
               <MuteButton className={UTILITY} />
@@ -93,11 +94,11 @@ export function VideoControls({ renderThumbnail }: ThumbnailSlot = {}) {
             <FullscreenButton className={UTILITY} />
           </div>
           <Tone tone="ghost">
-            <div data-holo="" data-holo-interactive="" className={SCRUBBER_BAR}>
+            <div className={SCRUBBER_BAR} data-holo="" data-holo-interactive="">
               <TimeElapsed className="min-w-[5ch] justify-end" />
               <TimeSlider
-                renderThumbnail={renderThumbnail}
                 className={SLIDER}
+                renderThumbnail={renderThumbnail}
               />
               <TimeTotal className="min-w-[5ch]" />
             </div>

@@ -2,19 +2,12 @@
 
 import { Poster as PosterPrimitive } from '@videojs/react';
 import { BufferingIndicator as BufferingIndicatorPrimitive, Controls } from '@videojs/react';
-import { SpinnerIcon as SpinnerIconPrimitive } from './icons';
+import { SpinnerIcon as SpinnerIconPrimitive } from '@/video/shared/icons';
 import type { ClassValue } from 'cn';
 
 import { cn, resolveClassName } from '@/lib/resolve-class-name';
 
-export function Poster({ renderImage }: { renderImage?: PosterPrimitive.ImageProps['render'] } = {}) {
-  return (
-    <PosterPrimitive.Root className={'absolute inset-0 size-full not-data-visible:hidden'}>
-      <PosterPrimitive.Image render={renderImage} className={'size-full object-media'} />
-    </PosterPrimitive.Root>
-  );
-}
-
+/** Shows buffering feedback when Video.js reports a stalled playback state. */
 export function BufferingIndicator({ className }: { className?: ClassValue } = {}) {
   return (
     <BufferingIndicatorPrimitive
@@ -32,6 +25,16 @@ export function BufferingIndicator({ className }: { className?: ClassValue } = {
   );
 }
 
+/** Displays the video poster through the skin's optional image renderer. */
+export function Poster({ renderImage }: { renderImage?: PosterPrimitive.ImageProps['render'] } = {}) {
+  return (
+    <PosterPrimitive.Root className={'absolute inset-0 size-full not-data-visible:hidden'}>
+      <PosterPrimitive.Image className={'size-full object-media'} render={renderImage} />
+    </PosterPrimitive.Root>
+  );
+}
+
+/** Positions buffering feedback over the video surface. */
 export function VideoBufferingIndicator() {
   return (
     <Controls.Group className={'group/buffering-controls contents'}>

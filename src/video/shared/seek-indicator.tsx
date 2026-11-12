@@ -1,7 +1,7 @@
 /** @jsxImportSource react */
 
 import { SeekIndicator as SeekIndicatorPrimitive } from '@videojs/react';
-import { ChevronIcon as ChevronIconPrimitive } from './icons';
+import { ChevronIcon as ChevronIconPrimitive } from '@/video/shared/icons';
 
 import { cn } from '@/lib/resolve-class-name';
 

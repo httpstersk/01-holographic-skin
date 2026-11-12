@@ -13,15 +13,16 @@ import {
   PipExitIcon as PipExitIconPrimitive,
   FullscreenEnterIcon as FullscreenEnterIconPrimitive,
   FullscreenExitIcon as FullscreenExitIconPrimitive,
-} from "./icons";
+} from "@/video/shared/icons";
 import type { ClassValue } from "cn";
 
 import { cn, resolveClassName } from "@/lib/resolve-class-name";
 
-import { AirPlayButton } from "./airplay-button";
-import { Button, HoverLabel } from "./button";
-import { ButtonTooltip } from "./tooltip";
+import { AirPlayButton } from "@/video/shared/airplay-button";
+import { Button, HoverLabel } from "@/video/shared/button";
+import { ButtonTooltip } from "@/video/shared/tooltip";
 
+/** Shows the current casting state on the Video.js cast control. */
 export function CastButton({
   className,
   label,
@@ -33,10 +34,10 @@ export function CastButton({
       }
     >
       <CastButtonPrimitive
-        render={<Button />}
         className={(state) =>
           cn("group/cast", resolveClassName(className, state))
         }
+        render={<Button />}
       >
         <CastEnterIconPrimitive
           className={cn(
@@ -56,40 +57,7 @@ export function CastButton({
   );
 }
 
-export function PiPButton({
-  className,
-  label,
-}: { className?: ClassValue; label?: string } = {}) {
-  return (
-    <ButtonTooltip
-      popupClassName={
-        "[--media-tooltip-side-offset:calc(var(--media-spacing)*3)]!"
-      }
-    >
-      <PiPButtonPrimitive
-        render={<Button />}
-        className={(state) =>
-          cn("group/pip", resolveClassName(className, state))
-        }
-      >
-        <PipEnterIconPrimitive
-          className={cn(
-            "col-start-1 row-start-1 size-4.5",
-            "group-data-pip/pip:hidden",
-          )}
-        />
-        <PipExitIconPrimitive
-          className={cn(
-            "col-start-1 row-start-1 size-4.5",
-            "hidden group-data-pip/pip:block",
-          )}
-        />
-        {label ? <HoverLabel>{label}</HoverLabel> : null}
-      </PiPButtonPrimitive>
-    </ButtonTooltip>
-  );
-}
-
+/** Shows the fullscreen entry or exit action for the current player state. */
 export function FullscreenButton({
   className,
   iconClassName,
@@ -104,10 +72,10 @@ export function FullscreenButton({
       }
     >
       <FullscreenButtonPrimitive
-        render={<Button />}
         className={(state) =>
           cn("group/fullscreen", resolveClassName(className, state))
         }
+        render={<Button />}
       >
         <FullscreenEnterIconPrimitive
           className={cn(
@@ -128,6 +96,42 @@ export function FullscreenButton({
   );
 }
 
+/** Shows the picture-in-picture action for the current player state. */
+export function PiPButton({
+  className,
+  label,
+}: { className?: ClassValue; label?: string } = {}) {
+  return (
+    <ButtonTooltip
+      popupClassName={
+        "[--media-tooltip-side-offset:calc(var(--media-spacing)*3)]!"
+      }
+    >
+      <PiPButtonPrimitive
+        className={(state) =>
+          cn("group/pip", resolveClassName(className, state))
+        }
+        render={<Button />}
+      >
+        <PipEnterIconPrimitive
+          className={cn(
+            "col-start-1 row-start-1 size-4.5",
+            "group-data-pip/pip:hidden",
+          )}
+        />
+        <PipExitIconPrimitive
+          className={cn(
+            "col-start-1 row-start-1 size-4.5",
+            "hidden group-data-pip/pip:block",
+          )}
+        />
+        {label ? <HoverLabel>{label}</HoverLabel> : null}
+      </PiPButtonPrimitive>
+    </ButtonTooltip>
+  );
+}
+
+
 /** Each button opens out its name on hover or focus. */
 const SCREEN_BUTTON =
   "h-(--holo-utility-size)! w-auto! min-w-(--holo-utility-size) rounded-full! px-2.5!";
@@ -135,13 +139,13 @@ const SCREEN_BUTTON =
 /** AirPlay, Cast, and picture-in-picture, top right. A button the browser can't use hides, and the group follows. */
 export function ScreenControls() {
   return (
-    <Controls.Group data-holo-screen="" data-holo-interactive="" className="absolute end-3 top-3 items-center gap-1.5">
+    <Controls.Group className="absolute end-3 top-3 items-center gap-1.5" data-holo-interactive="" data-holo-screen="">
       <AirPlayButton
         className={SCREEN_BUTTON}
+        label="AirPlay"
         popupClassName={
           "[--media-tooltip-side-offset:calc(var(--media-spacing)*3)]!"
         }
-        label="AirPlay"
       />
       <CastButton className={SCREEN_BUTTON} label="Cast" />
       <PiPButton className={SCREEN_BUTTON} label="Picture in picture" />

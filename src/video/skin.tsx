@@ -2,7 +2,7 @@
 
 "use client";
 
-import "../styles/video/holo.css";
+import "@/styles/video/holo.css";
 import {
   Container as ContainerPrimitive,
   Poster as PosterPrimitive,
@@ -12,17 +12,18 @@ import type { ReactNode } from "react";
 
 import { cn } from "@/lib/resolve-class-name";
 
-import { VideoGestures } from "./behaviors/gestures";
-import { VideoHotkeys } from "./behaviors/hotkeys";
-import { VideoControls } from "./controls";
-import { feel } from "./look";
-import { AmbientHoloStage } from "./holo/foil-layer";
-import { ErrorDialog } from "./shared/error-dialog";
-import { Indicators } from "./shared/indicators";
-import { SeekIndicator } from "./shared/seek-indicator";
-import { StatusAnnouncer } from "./shared/status-announcer";
-import { Poster } from "./shared/video-feedback";
+import { VideoGestures } from "@/video/behaviors/gestures";
+import { VideoHotkeys } from "@/video/behaviors/hotkeys";
+import { VideoControls } from "@/video/controls";
+import { feel } from "@/video/look";
+import { AmbientHoloStage } from "@/video/holo/foil-layer";
+import { ErrorDialog } from "@/video/shared/error-dialog";
+import { Indicators } from "@/video/shared/indicators";
+import { SeekIndicator } from "@/video/shared/seek-indicator";
+import { StatusAnnouncer } from "@/video/shared/status-announcer";
+import { Poster } from "@/video/shared/video-feedback";
 
+/** Extends the player container with custom poster and thumbnail renderers. */
 export interface VideoSkinProps extends Omit<
   ContainerPrimitive.Props,
   "children"
@@ -32,6 +33,7 @@ export interface VideoSkinProps extends Omit<
   renderThumbnail?: SliderPrimitive.Thumbnail.ImageProps["render"];
 }
 
+/** Composes the player surface, accessible controls, feedback, and decorative foil. */
 export function VideoSkin({
   children,
   className,
@@ -51,9 +53,9 @@ export function VideoSkin({
         '[--media-font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"SF_Pro_Text",Inter,system-ui,sans-serif] [--media-caption-controls-y:calc(var(--media-spacing)*-22)]',
         className,
       )}
+      data-preset="video"
       data-theme="holo"
       style={{ ...feel, ...style }}
-      data-preset="video"
       {...props}
     >
       {children}

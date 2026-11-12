@@ -2,6 +2,7 @@ import { useThree } from '@react-three/fiber';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { NoBlending, type RawShaderMaterial, Vector2, Vector4 } from 'three';
 
+import { foilIdleMotionSeconds, foilLightEpsilon } from '@/video/holo/motion';
 import {
   type FoilFinish,
   type FoilMotion,
@@ -9,7 +10,7 @@ import {
   foilFragmentShader,
   foilMotionUniforms,
   foilVertexShader,
-} from './shaders/foil';
+} from '@/video/holo/shaders/foil';
 
 export const foilMaterialProps = {
   vertexShader: foilVertexShader,
@@ -43,15 +44,14 @@ function createUniforms(finish: FoilFinish, motion: FoilMotion) {
   };
 }
 
+/** Bridges React settings and DOM light input to the demand-driven Three.js material. */
 export function useFoilMaterial(host: HTMLElement, still: boolean, finish: FoilFinish, motion: FoilMotion) {
   const invalidate = useThree((state) => state.invalidate);
-  const look = useRef({ finish, motion });
-  look.current = { finish, motion };
   const material = useRef<RawShaderMaterial | null>(null);
   const light = useRef({ inView: false, pointer: null as LightPoint | null, focus: null as LightPoint | null });
   const [uniforms] = useState(() => createUniforms(finish, motion));
 
-  // The canvas draws on demand, so a new look needs a frame asked for.
+  // Fiber draws on demand, so a changed finish or motion needs an explicit invalidation.
   useEffect(() => invalidate(), [finish, motion, invalidate]);
 
   const attach = useCallback(
@@ -79,9 +79,11 @@ export function useFoilMaterial(host: HTMLElement, still: boolean, finish: FoilF
       if (!still) {
         const move = (event: PointerEvent) => {
           state.pointer = positionAt(event.clientX, event.clientY);
+          invalidate();
         };
         const leave = () => {
           state.pointer = null;
+          invalidate();
         };
         const focus = (event: FocusEvent) => {
           const target = event.target;
@@ -115,6 +117,7 @@ export function useFoilMaterial(host: HTMLElement, still: boolean, finish: FoilF
     [host, invalidate, still]
   );
 
+  /** Advances a frame and reports whether the material still has motion to draw. */
   function advance(width: number, height: number, delta: number, pixelRatio: number) {
     if (!material.current || !light.current.inView || width < 1 || height < 1) return;
 
@@ -122,14 +125,13 @@ export function useFoilMaterial(host: HTMLElement, still: boolean, finish: FoilF
     const current = material.current.uniforms as typeof uniforms;
     const target = still ? center : light.current.focus ?? light.current.pointer ?? center;
     const dt = Math.min(delta, 0.05);
-    const { finish: currentFinish, motion: currentMotion } = look.current;
-    const follow = still ? 1 : 1 - Math.exp(-currentMotion.follow * dt);
+    const follow = still ? 1 : 1 - Math.exp(-motion.follow * dt);
     const position = current.lightPosition.value;
     position.x += (target.x - position.x) * follow;
     position.y += (target.y - position.y) * follow;
 
-    const { grating, metal, etched } = foilFinishUniforms(currentFinish);
-    const { a, b } = foilMotionUniforms(currentMotion);
+    const { grating, metal, etched } = foilFinishUniforms(finish);
+    const { a, b } = foilMotionUniforms(motion);
     current.grating.value.set(...grating);
     current.metal.value.set(...metal);
     current.etched.value = etched;
@@ -137,9 +139,13 @@ export function useFoilMaterial(host: HTMLElement, still: boolean, finish: FoilF
     current.motionB.value.set(...b);
     current.resolution.value.set(width, height);
     current.pixelSize.value = 1 / Math.max(pixelRatio, 0.5);
-    current.time.value = still ? 0 : current.time.value + dt;
-    return current;
+    current.time.value = still ? 0 : Math.min(current.time.value + delta, foilIdleMotionSeconds);
+    const lightMoving =
+      Math.abs(target.x - position.x) > foilLightEpsilon ||
+      Math.abs(target.y - position.y) > foilLightEpsilon;
+    const animating = !still && (lightMoving || current.time.value < foilIdleMotionSeconds);
+    return { animating, uniforms: current };
   }
 
-  return { attach, uniforms, advance };
+  return { advance, attach, uniforms };
 }

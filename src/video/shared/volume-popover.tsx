@@ -6,9 +6,9 @@ import { Popover, usePlayer, VolumeSlider } from '@videojs/react';
 import { useTranslator } from '@videojs/react/i18n';
 import { useRef, useState } from 'react';
 
-import { Button } from './button';
-import { SwitchesIcon } from './icons';
-import { ButtonTooltip } from './tooltip';
+import { Button } from '@/video/shared/button';
+import { SwitchesIcon } from '@/video/shared/icons';
+import { ButtonTooltip } from '@/video/shared/tooltip';
 
 /** Volume level and mute are separate actions. On devices with system-only volume, the mute button remains. */
 export function VolumePopover({ buttonClassName }: { buttonClassName?: string }) {
@@ -25,15 +25,15 @@ export function VolumePopover({ buttonClassName }: { buttonClassName?: string })
       if (event.relatedTarget && !event.currentTarget.contains(event.relatedTarget)) setOpen(false);
     }}>
       <Popover.Root
-        open={open}
-        side="top"
         onOpenChange={(nextOpen, { reason }) => {
           setOpen(nextOpen);
           if (reason === 'escape') trigger.current?.focus({ preventScroll: true });
         }}
+        open={open}
+        side="top"
       >
         <ButtonTooltip disabled={open} label={label}>
-          <Popover.Trigger ref={trigger} aria-label={label} render={<Button className={buttonClassName} />}>
+          <Popover.Trigger aria-label={label} ref={trigger} render={<Button className={buttonClassName} />}>
             <SwitchesIcon className="size-4.5" />
           </Popover.Trigger>
         </ButtonTooltip>

@@ -4,8 +4,9 @@ import { ErrorDialog as ErrorDialogPrimitive } from '@videojs/react';
 
 import { cn } from '@/lib/resolve-class-name';
 
-import { Button } from './button';
+import { Button } from '@/video/shared/button';
 
+/** Presents playback errors using Video.js's dialog focus management. */
 export function ErrorDialog() {
   return (
     <ErrorDialogPrimitive.Root>
@@ -25,8 +26,8 @@ export function ErrorDialog() {
           className={'text-[calc(var(--media-spacing)*3.25)] leading-normal tracking-normal normal-case'}
         />
         <ErrorDialogPrimitive.Close
-          render={<Button />}
           className={'h-8 w-auto justify-self-end bg-media-foreground text-media-background px-4'}
+          render={<Button />}
         />
       </ErrorDialogPrimitive.Popup>
     </ErrorDialogPrimitive.Root>

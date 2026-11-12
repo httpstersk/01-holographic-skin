@@ -4,7 +4,7 @@ import {
   defaultFoilMotion,
   type FoilFinish,
   type FoilMotion,
-} from "./holo/shaders/foil";
+} from "@/video/holo/shaders/foil";
 
 /** The foil's finish on the player's controls. The website's foil artwork keeps its own. */
 export const foilFinish: FoilFinish = {

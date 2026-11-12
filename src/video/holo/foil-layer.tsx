@@ -11,36 +11,27 @@ import {
   type ReactNode,
 } from "react";
 
-// Three.js loads after the controls are on screen; the skin is complete without it.
-const FoilCanvas = lazy(() => import("./foil"));
-const AmbientHoloCanvas = lazy(() => import("./ambient-canvas"));
+import { foilFinish, foilMotion } from "@/video/look";
 
-import { foilFinish, foilMotion } from "../look";
+// The skin renders its controls before loading Three.js for the decorative layers.
+const AmbientHoloCanvas = lazy(() => import("@/video/holo/ambient-canvas"));
+const FoilControlsCanvas = lazy(() => import("@/video/holo/foil"));
 
-const OFF =
+const motionQuery = "(prefers-reduced-motion: reduce)";
+const plainFoilQuery =
   "(prefers-contrast: more), (prefers-reduced-transparency: reduce), (forced-colors: active)";
-const STILL = "(prefers-reduced-motion: reduce)";
 
+/** Rendering mode derived from system accessibility preferences. */
 type Mode = "off" | "still" | "live";
 
-function subscribe(onChange: () => void) {
-  const queries = [matchMedia(OFF), matchMedia(STILL)];
-  for (const query of queries) query.addEventListener("change", onChange);
-  return () => {
-    for (const query of queries) query.removeEventListener("change", onChange);
-  };
-}
-
-function getMode(): Mode {
-  if (matchMedia(OFF).matches) return "off";
-  return matchMedia(STILL).matches ? "still" : "live";
+/** The layer's canvas renders against the parent element's layout. */
+interface LayerTarget {
+  host: HTMLElement;
+  still: boolean;
 }
 
 /** A lost or missing WebGL context leaves the plain foil-white controls in place. */
-class FoilBoundary extends Component<
-  { children: ReactNode },
-  { failed: boolean }
-> {
+class FoilBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
   state = { failed: false };
 
   static getDerivedStateFromError() {
@@ -52,73 +43,96 @@ class FoilBoundary extends Component<
   }
 }
 
-/**
- * The light on the foil. It lies over the controls it is rendered beside and multiplies into them, so it must be the
- * last child of an isolated container. Every element marked `data-holo` inside that container is a plate with a light
- * of its own. It takes no pointer input and is hidden from assistive technology.
- */
-export function HoloFoil() {
-  const [layer, setLayer] = useState<HTMLDivElement | null>(null);
-  const mode = useSyncExternalStore<Mode>(subscribe, getMode, () => "off");
-  const host = layer?.parentElement;
-
-  return (
-    <div
-      ref={setLayer}
-      aria-hidden="true"
-      className={
-        "pointer-events-none absolute inset-0 z-20 mix-blend-multiply media-high-contrast:hidden forced-colors:hidden"
-      }
-    >
-      {host && mode !== "off" && (
-        <FoilBoundary>
-          <Suspense fallback={null}>
-            <FoilCanvas
-              host={host}
-              still={mode === "still"}
-              finish={foilFinish}
-              motion={foilMotion}
-            />
-          </Suspense>
-        </FoilBoundary>
-      )}
-    </div>
-  );
-}
-
-/**
- * Full-video physical holographic lighting layer.
- * Covers the entire video surface and smoothly activates only when the video is idle (paused or ended).
- */
+/** Adds full-video lighting that fades in when playback pauses or ends. */
 export function AmbientHoloStage() {
-  const [layer, setLayer] = useState<HTMLDivElement | null>(null);
-  const mode = useSyncExternalStore<Mode>(subscribe, getMode, () => "off");
   const playback = usePlayer(selectPlayback);
+  const idle = playback?.paused || playback?.ended || !playback;
 
-  const isIdle = playback ? Boolean(playback.paused || playback.ended) : true;
-  const host = layer?.parentElement;
+  return (
+    <FoilLayer.Root
+      className="z-10 mix-blend-screen"
+      idle={idle}
+      render={({ host, still }) => (
+        <AmbientHoloCanvas host={host} idle={idle} motion={foilMotion} still={still} />
+      )}
+    />
+  );
+}
+
+/** Starts the lazy canvas only when its host exists and preferences allow it. */
+function Canvas({
+  host,
+  mode,
+  render,
+}: {
+  host: HTMLElement | null | undefined;
+  mode: Mode;
+  render: (target: LayerTarget) => ReactNode;
+}) {
+  if (!host || mode === "off") return null;
+
+  return (
+    <FoilBoundary>
+      <Suspense fallback={null}>{render({ host, still: mode === "still" })}</Suspense>
+    </FoilBoundary>
+  );
+}
+
+/** Reads motion and contrast preferences when React requests a snapshot. */
+function getMode(): Mode {
+  if (matchMedia(plainFoilQuery).matches) return "off";
+  return matchMedia(motionQuery).matches ? "still" : "live";
+}
+
+/** Keeps decorative WebGL off during server rendering and hydration. */
+function getServerMode(): Mode {
+  return "off";
+}
+
+/** Lights each control marked `data-holo` within the isolated controls container. */
+export function HoloFoil() {
+  return (
+    <FoilLayer.Root
+      className="z-20 mix-blend-multiply"
+      render={({ host, still }) => (
+        <FoilControlsCanvas finish={foilFinish} host={host} motion={foilMotion} still={still} />
+      )}
+    />
+  );
+}
+
+/** Anchors decorative foil to the layer's parent and keeps it out of the accessibility tree. */
+function Root({
+  className,
+  idle = false,
+  render,
+}: {
+  className: string;
+  idle?: boolean;
+  render: (target: LayerTarget) => ReactNode;
+}) {
+  const [layer, setLayer] = useState<HTMLDivElement | null>(null);
+  const mode = useSyncExternalStore(subscribe, getMode, getServerMode);
 
   return (
     <div
-      ref={setLayer}
       aria-hidden="true"
-      data-idle={isIdle ? "" : undefined}
-      className={
-        "pointer-events-none absolute inset-0 z-10 mix-blend-screen media-high-contrast:hidden forced-colors:hidden"
-      }
+      className={`pointer-events-none absolute inset-0 media-high-contrast:hidden forced-colors:hidden ${className}`}
+      data-idle={idle ? "" : undefined}
+      ref={setLayer}
     >
-      {host && mode !== "off" && (
-        <FoilBoundary>
-          <Suspense fallback={null}>
-            <AmbientHoloCanvas
-              host={host}
-              still={mode === "still"}
-              idle={isIdle}
-              motion={foilMotion}
-            />
-          </Suspense>
-        </FoilBoundary>
-      )}
+      <FoilLayer.Canvas host={layer?.parentElement} mode={mode} render={render} />
     </div>
   );
 }
+
+/** Subscribes React to system preference changes for as long as the foil is mounted. */
+function subscribe(onChange: () => void) {
+  const queries = [matchMedia(plainFoilQuery), matchMedia(motionQuery)];
+  for (const query of queries) query.addEventListener("change", onChange);
+  return () => {
+    for (const query of queries) query.removeEventListener("change", onChange);
+  };
+}
+
+const FoilLayer = { Canvas, Root };

@@ -1,10 +1,11 @@
 /** @jsxImportSource react */
 
 import { Menu as MenuPrimitive } from '@videojs/react';
-import { CheckIcon as CheckIconPrimitive } from './icons';
+import { CheckIcon as CheckIconPrimitive } from '@/video/shared/icons';
 
 import { cn } from '@/lib/resolve-class-name';
 
+/** Keeps the Video.js radio item behavior and adds a visual selection indicator. */
 export function RadioItem({ children, ...props }: MenuPrimitive.RadioItemProps) {
   return (
     <MenuPrimitive.RadioItem
@@ -18,8 +19,8 @@ export function RadioItem({ children, ...props }: MenuPrimitive.RadioItemProps) 
     >
       {children}
       <MenuPrimitive.ItemIndicator
-        forceMount
         className={'ms-auto -me-1 shrink-0 opacity-0 group-aria-checked/menu-radio:opacity-100'}
+        forceMount
       >
         <CheckIconPrimitive className={'size-4.5 shrink-0 opacity-70'} />
       </MenuPrimitive.ItemIndicator>

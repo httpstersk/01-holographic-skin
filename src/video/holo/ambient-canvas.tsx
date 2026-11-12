@@ -3,27 +3,29 @@
 import { useFrame } from '@react-three/fiber';
 import { useRef } from 'react';
 
-import { FoilCanvas } from './foil-canvas';
-import { etchedFoilFinish, type FoilMotion } from './shaders/foil';
-import { foilMaterialProps, useFoilMaterial } from './use-foil-material';
+import { FoilCanvas } from '@/video/holo/foil-canvas';
+import { etchedFoilFinish, type FoilMotion } from '@/video/holo/shaders/foil';
+import { foilMaterialProps, useFoilMaterial } from '@/video/holo/use-foil-material';
 
 const ambientShader = { FOIL_AMBIENT: 1 };
 
+/** Playback and motion inputs for the ambient light. */
 interface AmbientProps {
   host: HTMLElement;
-  still: boolean;
   idle: boolean;
   motion: FoilMotion;
+  still: boolean;
 }
 
-function AmbientFoil({ host, still, idle, motion }: AmbientProps) {
+/** Fades the ambient material as playback changes without updating React on each frame. */
+function AmbientFoil({ host, idle, motion, still }: AmbientProps) {
   const { attach, uniforms, advance } = useFoilMaterial(host, still, etchedFoilFinish, motion);
   const opacity = useRef(idle ? 1 : 0);
 
-  useFrame(({ size, viewport, invalidate }, delta) => {
+  useFrame(({ invalidate, size, viewport }, delta) => {
     const target = idle ? 1 : 0;
-    const current = advance(size.width, size.height, delta, viewport.dpr);
-    if (!current) {
+    const frame = advance(size.width, size.height, delta, viewport.dpr);
+    if (!frame) {
       opacity.current = target;
       return;
     }
@@ -34,8 +36,8 @@ function AmbientFoil({ host, still, idle, motion }: AmbientProps) {
       const rate = idle ? 4.5 : 6.5;
       opacity.current += (target - opacity.current) * (1 - Math.exp(-rate * Math.min(delta, 0.05)));
     }
-    current.opacity.value = opacity.current;
-    if (!still && (idle || opacity.current > 0)) invalidate();
+    frame.uniforms.opacity.value = opacity.current;
+    if (opacity.current !== target || (idle && frame.animating)) invalidate();
   });
 
   return (
@@ -53,6 +55,7 @@ function AmbientFoil({ host, still, idle, motion }: AmbientProps) {
   );
 }
 
+/** Mounts the ambient shader inside the demand-driven canvas. */
 export default function AmbientHoloCanvas(props: AmbientProps) {
   return (
     <FoilCanvas>

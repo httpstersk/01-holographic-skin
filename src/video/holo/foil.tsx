@@ -4,15 +4,16 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { useCallback, useRef, useState } from 'react';
 import { DynamicDrawUsage, type InstancedBufferAttribute, type InstancedBufferGeometry } from 'three';
 
-import { FoilCanvas } from './foil-canvas';
-import type { FoilFinish, FoilMotion } from './shaders/foil';
-import { foilMaterialProps, useFoilMaterial } from './use-foil-material';
+import { FoilCanvas } from '@/video/holo/foil-canvas';
+import type { FoilFinish, FoilMotion } from '@/video/holo/shaders/foil';
+import { foilMaterialProps, useFoilMaterial } from '@/video/holo/use-foil-material';
 
 const MAX_PLATES = 64;
 const positions = new Float32Array([-1, -1, 0, 1, -1, 0, -1, 1, 0, 1, 1, 0]);
 const indices = new Uint16Array([0, 1, 2, 2, 1, 3]);
 const plateShader = { FOIL_PLATES: 1 };
 
+/** Writes the visible controls' bounds into the instanced mesh attributes. */
 function measurePlates(
   host: HTMLElement,
   plates: HTMLElement[],
@@ -33,12 +34,14 @@ function measurePlates(
   return count;
 }
 
+/** Optical and motion settings shared by all control plates. */
 interface FoilLook {
   finish: FoilFinish;
   motion: FoilMotion;
 }
 
-function FoilPlates({ host, still, finish, motion }: { host: HTMLElement; still: boolean } & FoilLook) {
+/** Updates one mesh for every visible foil plate in the controls. */
+function FoilPlates({ finish, host, motion, still }: { host: HTMLElement; still: boolean } & FoilLook) {
   const invalidate = useThree((state) => state.invalidate);
   const { attach, uniforms, advance } = useFoilMaterial(host, still, finish, motion);
   const geometry = useRef<InstancedBufferGeometry | null>(null);
@@ -102,24 +105,24 @@ function FoilPlates({ host, still, finish, motion }: { host: HTMLElement; still:
     }
 
     const controlsVisible = host.hasAttribute('data-visible') || host.querySelector(':focus-visible');
-    if (!still && controlsVisible && geometry.current.instanceCount > 0) invalidate();
+    if (ready.animating && controlsVisible && geometry.current.instanceCount > 0) invalidate();
   });
 
   return (
     <mesh frustumCulled={false}>
-      <instancedBufferGeometry ref={attachGeometry} instanceCount={0}>
-        <bufferAttribute attach="index" args={[indices, 1]} />
-        <bufferAttribute attach="attributes-position" args={[positions, 3]} />
+      <instancedBufferGeometry instanceCount={0} ref={attachGeometry}>
+        <bufferAttribute args={[indices, 1]} attach="index" />
+        <bufferAttribute args={[positions, 3]} attach="attributes-position" />
         <instancedBufferAttribute
-          ref={rects}
-          attach="attributes-plateRect"
           args={[rectData, 4]}
+          attach="attributes-plateRect"
+          ref={rects}
           usage={DynamicDrawUsage}
         />
         <instancedBufferAttribute
-          ref={radii}
-          attach="attributes-plateRadius"
           args={[radiusData, 1]}
+          attach="attributes-plateRadius"
+          ref={radii}
           usage={DynamicDrawUsage}
         />
       </instancedBufferGeometry>
@@ -128,10 +131,11 @@ function FoilPlates({ host, still, finish, motion }: { host: HTMLElement; still:
   );
 }
 
-export default function FoilControlsCanvas({ host, still, finish, motion }: { host: HTMLElement; still: boolean } & FoilLook) {
+/** Mounts the instanced plate renderer inside the decorative canvas. */
+export default function FoilControlsCanvas({ finish, host, motion, still }: { host: HTMLElement; still: boolean } & FoilLook) {
   return (
     <FoilCanvas>
-      <FoilPlates host={host} still={still} finish={finish} motion={motion} />
+      <FoilPlates finish={finish} host={host} motion={motion} still={still} />
     </FoilCanvas>
   );
 }

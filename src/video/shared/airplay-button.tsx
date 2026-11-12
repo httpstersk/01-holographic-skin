@@ -4,30 +4,31 @@ import { AirPlayButton as AirPlayButtonPrimitive } from "@videojs/react";
 import {
   AirPlayEnterIcon as AirPlayEnterIconPrimitive,
   AirPlayExitIcon as AirPlayExitIconPrimitive,
-} from "./icons";
+} from "@/video/shared/icons";
 import type { ClassValue } from "cn";
 
 import { cn, resolveClassName } from "@/lib/resolve-class-name";
 
-import { Button, HoverLabel } from "./button";
-import { ButtonTooltip } from "./tooltip";
+import { Button, HoverLabel } from "@/video/shared/button";
+import { ButtonTooltip } from "@/video/shared/tooltip";
 
+/** Composes the native AirPlay control with the skin's button and tooltip. */
 export function AirPlayButton({
   className,
-  popupClassName,
   label,
+  popupClassName,
 }: {
   className?: ClassValue;
-  popupClassName?: ClassValue;
   label?: string;
+  popupClassName?: ClassValue;
 } = {}) {
   return (
     <ButtonTooltip popupClassName={popupClassName}>
       <AirPlayButtonPrimitive
-        render={<Button />}
         className={(state) =>
           cn("group/airplay", resolveClassName(className, state))
         }
+        render={<Button />}
       >
         <AirPlayEnterIconPrimitive
           className={cn(
