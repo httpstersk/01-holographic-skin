@@ -32,15 +32,11 @@ export function Button({ className, ...props }: ButtonProps) {
       className={cn(
         "group/btn relative grid size-8 shrink-0 cursor-pointer touch-manipulation place-items-center rounded-media-control p-0 text-inherit",
         tone === "plate" ? PLATE : GHOST,
-        // The oval is 32px; on touch its hit area is 44px.
-        "pointer-coarse:before:absolute pointer-coarse:before:-inset-[7px] pointer-coarse:before:content-['']",
-        "transition-[background-color,border-color,color,scale,translate,transform] duration-(--feel-duration,150ms) ease-(--feel-ease,ease-out)",
+        "transition-[background-color,border-color,color,scale,translate,transform] duration-(--feel-duration,150ms) ease-(--feel-ease,ease-out) motion-reduce:transition-none",
         tone === "plate"
           ? "motion-safe:hover:-translate-y-(--feel-lift,2px) motion-safe:hover:scale-(--feel-scale,1.08) motion-safe:active:translate-y-0 motion-safe:active:scale-92"
           : "motion-safe:hover:scale-(--feel-ghost-scale,1.05) motion-safe:active:scale-95",
-        // A ring inside the control, in the ink the focused control is drawn in, so it never overlaps a neighbor or needs a shadow.
-        "focus-visible:outline-2 focus-visible:outline-solid focus-visible:-outline-offset-5 focus-visible:outline-current",
-        "forced-colors:focus-visible:outline-offset-2 forced-colors:focus-visible:outline-[Highlight]",
+        "focus-visible:z-10 focus-visible:focus-holo",
         // A disabled control keeps its opaque plate and dims only what is stamped on it.
         "outline-none aria-disabled:cursor-not-allowed aria-disabled:*:opacity-40 disabled:cursor-not-allowed disabled:*:opacity-40",
         tone === "plate" &&
@@ -67,7 +63,7 @@ export function HoverLabel({ children }: { children: string }) {
   return (
     <span
       aria-hidden="true"
-      className="col-start-2 row-start-1 max-w-0 overflow-hidden text-media-sm font-medium whitespace-nowrap opacity-0 transition-[max-width,opacity,margin] duration-(--feel-duration,150ms) group-hover/btn:ms-1.5 group-hover/btn:max-w-32 group-hover/btn:opacity-100 group-focus-visible/btn:ms-1.5 group-focus-visible/btn:max-w-32 group-focus-visible/btn:opacity-100"
+      className="col-start-2 row-start-1 max-w-0 overflow-hidden text-media-sm font-medium whitespace-nowrap opacity-0 transition-[max-width,opacity,margin] duration-(--feel-duration,150ms) motion-reduce:transition-none group-hover/btn:ms-1.5 group-hover/btn:max-w-32 group-hover/btn:opacity-100 group-focus-visible/btn:ms-1.5 group-focus-visible/btn:max-w-32 group-focus-visible/btn:opacity-100"
     >
       {children}
     </span>

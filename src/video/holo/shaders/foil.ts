@@ -341,7 +341,7 @@ void main() {
     // The control plates carry dark text and icons, so lift the darkest parts of the spectrum.
     outputColor = clamp(outputColor, 0.0, 1.0);
     float luma = dot(outputColor, vec3(0.2126, 0.7152, 0.0722));
-    outputColor = mix(outputColor, vec3(1.0), max(0.0, 0.53 - luma) / max(0.001, 1.0 - luma));
+    outputColor = mix(outputColor, vec3(1.0), max(0.0, 0.62 - luma) / max(0.001, 1.0 - luma));
   #endif
 
   gl_FragColor = vec4(outputColor * alpha, alpha);

@@ -10,7 +10,7 @@ const GROUP = 'flex shrink-0 items-center rtl:flex-row-reverse leading-none font
 export function TimeElapsed({ className }: { className?: string } = {}) {
   return (
     <Time.Group className={cn(GROUP, 'font-semibold', className)}>
-      <Time.Value type="current" className={'data-unavailable:opacity-50'} />
+      <Time.Value type="current" />
     </Time.Group>
   );
 }
@@ -18,7 +18,7 @@ export function TimeElapsed({ className }: { className?: string } = {}) {
 export function TimeTotal({ className }: { className?: string } = {}) {
   return (
     <Time.Group className={cn(GROUP, className)}>
-      <Time.Value type="duration" className={'data-unavailable:opacity-50'} />
+      <Time.Value type="duration" />
     </Time.Group>
   );
 }

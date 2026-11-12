@@ -41,7 +41,7 @@ function QualityMenu() {
       <QualityRadioGroup.Root>
         <Menu.Trigger
           className={cn(
-            'flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-media-menu-item min-h-8 w-full shrink-0 bg-media-background bg-clip-padding px-2 py-0 text-start',
+            'flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-media-menu-item min-h-(--holo-menu-item-height) w-full shrink-0 bg-media-background bg-clip-padding px-2 py-0 text-start',
             'data-[availability=unavailable]:hidden data-[availability=unsupported]:hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-[-2px] focus-visible:outline-current',
             'data-highlighted:bg-(--media-button-highlight) media-high-contrast:data-highlighted:highlight-media forced-colors:data-highlighted:highlight-media'
           )}
@@ -66,7 +66,7 @@ function QualityMenu() {
         >
           <Menu.Item
             className={cn(
-              'flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-media-menu-item min-h-8 w-full shrink-0 bg-media-background bg-clip-padding px-2 py-0 text-start',
+              'flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-media-menu-item min-h-(--holo-menu-item-height) w-full shrink-0 bg-media-background bg-clip-padding px-2 py-0 text-start',
               'focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-[-2px] focus-visible:outline-current',
               'data-highlighted:bg-(--media-button-highlight) media-high-contrast:data-highlighted:highlight-media forced-colors:data-highlighted:highlight-media'
             )}
@@ -103,7 +103,7 @@ function AudioTrackMenu() {
       <AudioTrackRadioGroup.Root>
         <Menu.Trigger
           className={cn(
-            'flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-media-menu-item min-h-8 w-full shrink-0 bg-media-background bg-clip-padding px-2 py-0 text-start',
+            'flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-media-menu-item min-h-(--holo-menu-item-height) w-full shrink-0 bg-media-background bg-clip-padding px-2 py-0 text-start',
             'data-[availability=unavailable]:hidden data-[availability=unsupported]:hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-[-2px] focus-visible:outline-current',
             'data-highlighted:bg-(--media-button-highlight) media-high-contrast:data-highlighted:highlight-media forced-colors:data-highlighted:highlight-media'
           )}
@@ -128,7 +128,7 @@ function AudioTrackMenu() {
         >
           <Menu.Item
             className={cn(
-              'flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-media-menu-item min-h-8 w-full shrink-0 bg-media-background bg-clip-padding px-2 py-0 text-start',
+              'flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-media-menu-item min-h-(--holo-menu-item-height) w-full shrink-0 bg-media-background bg-clip-padding px-2 py-0 text-start',
               'focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-[-2px] focus-visible:outline-current',
               'data-highlighted:bg-(--media-button-highlight) media-high-contrast:data-highlighted:highlight-media forced-colors:data-highlighted:highlight-media'
             )}
@@ -157,7 +157,7 @@ function PlaybackRateMenu() {
       <PlaybackRateRadioGroup.Root>
         <Menu.Trigger
           className={cn(
-            'flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-media-menu-item min-h-8 w-full shrink-0 bg-media-background bg-clip-padding px-2 py-0 text-start',
+            'flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-media-menu-item min-h-(--holo-menu-item-height) w-full shrink-0 bg-media-background bg-clip-padding px-2 py-0 text-start',
             'data-[availability=unavailable]:hidden data-[availability=unsupported]:hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-[-2px] focus-visible:outline-current',
             'data-highlighted:bg-(--media-button-highlight) media-high-contrast:data-highlighted:highlight-media forced-colors:data-highlighted:highlight-media'
           )}
@@ -182,7 +182,7 @@ function PlaybackRateMenu() {
         >
           <Menu.Item
             className={cn(
-              'flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-media-menu-item min-h-8 w-full shrink-0 bg-media-background bg-clip-padding px-2 py-0 text-start',
+              'flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-media-menu-item min-h-(--holo-menu-item-height) w-full shrink-0 bg-media-background bg-clip-padding px-2 py-0 text-start',
               'focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-[-2px] focus-visible:outline-current',
               'data-highlighted:bg-(--media-button-highlight) media-high-contrast:data-highlighted:highlight-media forced-colors:data-highlighted:highlight-media'
             )}
@@ -211,7 +211,7 @@ function CaptionsMenu() {
       <CaptionsRadioGroup.Root>
         <Menu.Trigger
           className={cn(
-            'flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-media-menu-item min-h-8 w-full shrink-0 bg-media-background bg-clip-padding px-2 py-0 text-start',
+            'flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-media-menu-item min-h-(--holo-menu-item-height) w-full shrink-0 bg-media-background bg-clip-padding px-2 py-0 text-start',
             'data-[availability=unavailable]:hidden data-[availability=unsupported]:hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-[-2px] focus-visible:outline-current',
             'data-highlighted:bg-(--media-button-highlight) media-high-contrast:data-highlighted:highlight-media forced-colors:data-highlighted:highlight-media'
           )}
@@ -236,7 +236,7 @@ function CaptionsMenu() {
         >
           <Menu.Item
             className={cn(
-              'flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-media-menu-item min-h-8 w-full shrink-0 bg-media-background bg-clip-padding px-2 py-0 text-start',
+              'flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-media-menu-item min-h-(--holo-menu-item-height) w-full shrink-0 bg-media-background bg-clip-padding px-2 py-0 text-start',
               'focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-[-2px] focus-visible:outline-current',
               'data-highlighted:bg-(--media-button-highlight) media-high-contrast:data-highlighted:highlight-media forced-colors:data-highlighted:highlight-media'
             )}
@@ -276,7 +276,7 @@ export function SettingsMenu({
         <Menu.Trigger render={<Button className={cn('group/settings', buttonClassName)} />}>
           <GearIconPrimitive
             className={cn(
-              'col-start-1 row-start-1 size-4.5 transition-transform duration-200 ease-out motion-safe:group-hover/settings:rotate-45',
+              'col-start-1 row-start-1 size-4.5 motion-safe:transition-transform duration-media-base ease-out motion-safe:group-hover/settings:rotate-45',
               iconClassName
             )}
           />
@@ -308,6 +308,7 @@ export function SettingsMenu({
           '[--media-popup-side-offset:var(--media-popover-side-offset)] [--media-popover-side-offset:calc(var(--media-spacing)*4)]',
           'max-h-[min(var(--media-menu-available-height,--spacing(56)),--spacing(56))] overscroll-none',
           'h-(--media-menu-height) w-(--media-menu-width)',
+          'motion-reduce:transition-none',
           'media-high-contrast:outline forced-colors:outline'
         )}
       >

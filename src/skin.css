@@ -257,6 +257,18 @@
   outline-offset: -2px;
 }
 
+/* The light ring is backed by dark ink on both sides, even over white footage. */
+@utility focus-holo {
+  outline: 2px solid white;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px #0a0a0c;
+
+  @media (forced-colors: active) {
+    outline-color: Highlight;
+    box-shadow: none;
+  }
+}
+
 @utility mask-media-volume {
   mask-repeat: no-repeat;
   mask-position: 100% 0;

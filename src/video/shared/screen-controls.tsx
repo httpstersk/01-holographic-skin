@@ -130,12 +130,12 @@ export function FullscreenButton({
 
 /** Each button opens out its name on hover or focus. */
 const SCREEN_BUTTON =
-  "h-9! w-auto! min-w-9 rounded-full! px-2.5! pointer-coarse:h-11!";
+  "h-(--holo-utility-size)! w-auto! min-w-(--holo-utility-size) rounded-full! px-2.5!";
 
 /** AirPlay, Cast, and picture-in-picture, top right. A button the browser can't use hides, and the group follows. */
 export function ScreenControls() {
   return (
-    <Controls.Group className="group-not-data-visible/controls:pointer-events-none pointer-events-auto absolute end-3 top-3 flex items-center gap-1.5">
+    <Controls.Group data-holo-screen="" data-holo-interactive="" className="absolute end-3 top-3 items-center gap-1.5">
       <AirPlayButton
         className={SCREEN_BUTTON}
         popupClassName={

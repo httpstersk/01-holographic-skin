@@ -9,7 +9,7 @@ export function RadioItem({ children, ...props }: MenuPrimitive.RadioItemProps) 
   return (
     <MenuPrimitive.RadioItem
       className={cn(
-        'group/menu-radio flex cursor-pointer items-center justify-between gap-3 rounded-media-menu-item min-h-8 w-full shrink-0 bg-media-background bg-clip-padding px-2 py-0',
+        'group/menu-radio flex cursor-pointer items-center justify-between gap-3 rounded-media-menu-item min-h-(--holo-menu-item-height) w-full shrink-0 bg-media-background bg-clip-padding px-2 py-0',
         'focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-[-2px] focus-visible:outline-current',
         'data-highlighted:bg-(--media-button-highlight) media-high-contrast:data-highlighted:highlight-media forced-colors:data-highlighted:highlight-media',
         'data-custom:italic'

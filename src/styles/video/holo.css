@@ -1,2 +1,95 @@
 @import "./base.css";
 @import "../themes/holo.css";
+
+@layer components {
+  .media-skin[data-theme="holo"]:focus-visible::after {
+    content: "";
+    position: absolute;
+    inset: 2px;
+    z-index: 40;
+    pointer-events: none;
+    border: 2px solid white;
+    border-radius: inherit;
+    box-shadow: 0 0 0 2px #0a0a0c, inset 0 0 0 2px #0a0a0c;
+
+    @media (forced-colors: active) {
+      border-color: Highlight;
+    }
+  }
+
+  .media-skin [data-holo-controls] {
+    container: holo-controls / size;
+    --holo-utility-size: calc(var(--spacing) * 9);
+    --holo-scrubber-height: calc(var(--spacing) * 9);
+    --holo-play-size: calc(var(--spacing) * 16);
+    --holo-menu-item-height: calc(var(--spacing) * 8);
+    --holo-bottom-controls: calc(var(--holo-scrubber-height) + var(--holo-utility-size) + var(--spacing) * 2);
+  }
+
+  .media-skin [data-holo-screen] {
+    display: none;
+  }
+
+  .media-skin [data-holo-playback] {
+    inset-inline: 0;
+    top: min(50%, calc(100% - var(--holo-bottom-controls) - var(--holo-play-size) / 2 - 4px));
+  }
+
+  .media-skin [data-holo-utilities] {
+    inset-inline-end: calc(var(--spacing) * 3);
+    bottom: calc(var(--holo-scrubber-height) + var(--spacing) * 2);
+    gap: calc(var(--spacing) * 1.5);
+  }
+
+  @container holo-controls (width >= 24rem) and (height >= 10rem) {
+    .media-skin [data-holo-screen] {
+      display: flex;
+    }
+  }
+
+  @container holo-controls (height < 10rem) {
+    /* Share one row in short embeds, leaving the full bottom row for seeking. */
+    .media-skin [data-holo-playback] {
+      --holo-play-size: var(--holo-utility-size);
+      inset-inline: 6px auto;
+      top: calc((100% - var(--holo-scrubber-height)) / 2);
+    }
+
+    .media-skin [data-holo-jump] {
+      display: none !important;
+    }
+
+    .media-skin [data-holo-utilities] {
+      inset-inline-end: 6px;
+      bottom: auto;
+      top: calc((100% - var(--holo-scrubber-height)) / 2);
+      translate: 0 -50%;
+      gap: 2px;
+    }
+  }
+
+  @container media-root (width < 28rem) {
+    .media-skin [data-holo-controls] {
+      --holo-utility-size: max(44px, calc(var(--spacing) * 9));
+      --holo-scrubber-height: max(44px, calc(var(--spacing) * 9));
+      --holo-play-size: max(56px, calc(var(--spacing) * 14));
+      --holo-menu-item-height: max(44px, calc(var(--spacing) * 8));
+    }
+  }
+
+  @media (any-pointer: coarse) {
+    .media-skin [data-holo-controls] {
+      --holo-utility-size: max(44px, calc(var(--spacing) * 11));
+      --holo-scrubber-height: max(44px, calc(var(--spacing) * 11));
+      --holo-menu-item-height: max(44px, calc(var(--spacing) * 8));
+    }
+  }
+
+  .media-skin [data-holo-controls]:not([data-visible], :has(:focus-visible, [aria-expanded="true"])) {
+    opacity: 0;
+  }
+
+  .media-skin [data-holo-controls]:is([data-visible], :has(:focus-visible, [aria-expanded="true"])) [data-holo-interactive] {
+    pointer-events: auto;
+  }
+}

@@ -24,7 +24,6 @@ export function TimeSlider({
       <TimeSliderPrimitive.Root
         className={cn(
           "group/slider relative flex h-(--hit,1.5rem) min-w-12 flex-1 cursor-pointer touch-none items-center",
-          "pointer-coarse:before:absolute pointer-coarse:before:inset-x-0 pointer-coarse:before:-top-3 pointer-coarse:before:-bottom-2 pointer-coarse:before:content-['']",
           "data-disabled:cursor-not-allowed data-disabled:opacity-40 forced-colors:data-disabled:text-[GrayText] forced-colors:data-disabled:opacity-100",
           className,
         )}
@@ -43,9 +42,9 @@ export function TimeSlider({
             >
               <TimeSliderPrimitive.Track
                 className={cn(
-                  "absolute inset-x-0 isolate h-(--trk,1rem) overflow-hidden rounded-(--trk-r,9999px) transition-[height] duration-150 ease-out forced-colors:h-1.5",
+                  "absolute inset-x-0 isolate h-(--trk,1rem) overflow-hidden rounded-(--trk-r,9999px) motion-safe:transition-[height] duration-media-slider ease-out forced-colors:h-1.5",
                   "group-hover/slider:h-(--trk-hover,1.25rem) group-data-dragging/slider:h-(--trk-hover,1.25rem)",
-                  "before:absolute before:top-1/2 before:h-(--rail,100%) before:-translate-y-1/2 before:rounded-[inherit] before:bg-current before:opacity-25 before:clip-media-chapter-track-x",
+                  "before:absolute before:top-1/2 before:h-(--rail,100%) before:-translate-y-1/2 before:rounded-[inherit] before:bg-current before:opacity-70 before:clip-media-chapter-track-x",
                   "forced-colors:before:h-full forced-colors:before:bg-[Canvas] forced-colors:before:opacity-100! forced-colors:before:forced-color-adjust-none",
                   "forced-colors:before:border forced-colors:before:border-solid forced-colors:before:border-[CanvasText]",
                 )}
@@ -71,9 +70,9 @@ export function TimeSlider({
         <TimeSliderPrimitive.Thumb
           className={cn(
             "absolute left-[var(--media-slider-fill,0%)] size-(--thumb,1.25rem) transform-[translateX(-50%)] rounded-full bg-current",
-            "transition-[transform,scale,height,width] duration-150 ease-out group-hover/slider:scale-115 group-data-dragging/slider:scale-125",
+            "motion-safe:transition-transform duration-media-slider ease-out motion-safe:group-hover/slider:scale-115 motion-safe:group-data-dragging/slider:scale-125",
             "group-data-dragging/slider:left-(--media-slider-pointer)",
-            "outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-current",
+            "outline-none focus-visible:focus-holo",
             "forced-colors:bg-[Highlight] forced-colors:forced-color-adjust-none",
             "forced-colors:border forced-colors:border-solid forced-colors:border-[CanvasText]",
           )}
@@ -82,7 +81,7 @@ export function TimeSlider({
         <TimeSliderPrimitive.Preview
           className={cn(
             "pointer-events-none bottom-[calc(100%+var(--media-spacing)*4)] grid max-w-39 origin-bottom justify-items-center gap-1",
-            "opacity-0 transition-opacity duration-150 group-data-disabled/slider:hidden",
+            "opacity-0 motion-safe:transition-opacity duration-media-slider group-data-disabled/slider:hidden",
             "group-data-pointing/slider:opacity-100",
             "group-data-dragging/slider:opacity-100",
           )}
