@@ -87,8 +87,9 @@ function FoilPlates({ host, still }: { host: HTMLElement; still: boolean }) {
     [host, invalidate]
   );
 
-  useFrame(({ size }, delta) => {
-    if (!advance(size.width, size.height, delta) || !geometry.current || !rects.current || !radii.current) return;
+  useFrame(({ size, viewport }, delta) => {
+    const ready = advance(size.width, size.height, delta, viewport.dpr);
+    if (!ready || !geometry.current || !rects.current || !radii.current) return;
 
     if (layoutDirty.current) {
       geometry.current.instanceCount = measurePlates(host, plates.current, rects.current, radii.current);

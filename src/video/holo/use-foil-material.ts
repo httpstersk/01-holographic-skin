@@ -25,6 +25,7 @@ function createUniforms(finish: FoilFinish) {
     lightPosition: { value: new Vector2(center.x, center.y) },
     time: { value: 0 },
     relief: { value: 4.5 },
+    pixelSize: { value: 1 },
     grating: { value: new Vector4(...grating) },
     metal: { value: new Vector4(...metal) },
     etched: { value: etched },
@@ -99,7 +100,7 @@ export function useFoilMaterial(host: HTMLElement, still: boolean, finish: FoilF
     [host, invalidate, still]
   );
 
-  function advance(width: number, height: number, delta: number) {
+  function advance(width: number, height: number, delta: number, pixelRatio: number) {
     if (!material.current || !light.current.inView || width < 1 || height < 1) return;
 
     // Fiber merges the props into the material's live uniform records.
@@ -111,6 +112,7 @@ export function useFoilMaterial(host: HTMLElement, still: boolean, finish: FoilF
     position.x += (target.x - position.x) * follow;
     position.y += (target.y - position.y) * follow;
     current.resolution.value.set(width, height);
+    current.pixelSize.value = 1 / Math.max(pixelRatio, 0.5);
     current.time.value = still ? 0 : current.time.value + dt;
     return current;
   }

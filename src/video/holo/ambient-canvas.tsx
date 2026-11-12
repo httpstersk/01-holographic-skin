@@ -19,9 +19,9 @@ function AmbientFoil({ host, still, idle }: AmbientProps) {
   const { attach, uniforms, advance } = useFoilMaterial(host, still, etchedFoilFinish);
   const opacity = useRef(idle ? 1 : 0);
 
-  useFrame(({ size, invalidate }, delta) => {
+  useFrame(({ size, viewport, invalidate }, delta) => {
     const target = idle ? 1 : 0;
-    const current = advance(size.width, size.height, delta);
+    const current = advance(size.width, size.height, delta, viewport.dpr);
     if (!current) {
       opacity.current = target;
       return;
