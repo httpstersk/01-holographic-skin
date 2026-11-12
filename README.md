@@ -18,7 +18,9 @@ npm run deploy
 
 It asks where to deploy the workbench: Vercel, Netlify, or Cloudflare Pages. Name one to skip the question, such as `npm run deploy vercel`. The first time, the host's CLI signs you in and creates the project, then every run prints the URL. Vercel and Netlify deploy to a preview URL you can share; to deploy to production instead, add `--prod` to the `deploy:netlify` script, or to both commands in `deploy:vercel`.
 
-To deploy on every push instead, put the project on GitHub and import it on Vercel or Netlify; `vercel.json` and `netlify.toml` already describe the build. The build uses relative URLs, so `dist/` also works on any static host, including in a subfolder.
+To deploy on every push instead, put the project on GitHub and import it on Vercel or Netlify; `vercel.json` and `netlify.toml` already describe the build. On Vercel, import the repository with the default settings and make sure the repository is public if another project uses it as a submodule. The website in the parent repository embeds this skin at a pinned commit, so bump the submodule pointer there after you push changes here. See `DEPLOYMENT.md` in the parent repository.
+
+The build uses relative URLs, so `dist/` also works on any static host, including in a subfolder.
 
 ## Where things live
 
