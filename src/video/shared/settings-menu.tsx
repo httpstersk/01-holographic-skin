@@ -9,7 +9,7 @@ import {
   SpeedIcon as SpeedIconPrimitive,
   CaptionsOffIcon as CaptionsOffIconPrimitive,
   GearIcon as GearIconPrimitive,
-} from '@videojs/react/icons/scaffold';
+} from './icons';
 import { AudioTrackRadioGroup } from '@videojs/react/ui/audio-track-radio-group';
 import { CaptionsRadioGroup } from '@videojs/react/ui/captions-radio-group';
 import { PlaybackRateRadioGroup } from '@videojs/react/ui/playback-rate-radio-group';

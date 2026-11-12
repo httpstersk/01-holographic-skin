@@ -1,33 +1,46 @@
 /** @jsxImportSource react */
 
-import { selectPlayback } from '@videojs/core/dom';
-import { usePlayer } from '@videojs/react';
-import { Component, lazy, Suspense, useState, useSyncExternalStore, type ReactNode } from 'react';
+import { selectPlayback } from "@videojs/core/dom";
+import { usePlayer } from "@videojs/react";
+import {
+  Component,
+  lazy,
+  Suspense,
+  useState,
+  useSyncExternalStore,
+  type ReactNode,
+} from "react";
 
 // Three.js loads after the controls are on screen; the skin is complete without it.
-const FoilCanvas = lazy(() => import('./foil'));
-const AmbientHoloCanvas = lazy(() => import('./ambient-canvas'));
+const FoilCanvas = lazy(() => import("./foil"));
+const AmbientHoloCanvas = lazy(() => import("./ambient-canvas"));
 
-const OFF = '(prefers-contrast: more), (prefers-reduced-transparency: reduce), (forced-colors: active)';
-const STILL = '(prefers-reduced-motion: reduce)';
+import { foilFinish, foilMotion } from "../look";
 
-type Mode = 'off' | 'still' | 'live';
+const OFF =
+  "(prefers-contrast: more), (prefers-reduced-transparency: reduce), (forced-colors: active)";
+const STILL = "(prefers-reduced-motion: reduce)";
+
+type Mode = "off" | "still" | "live";
 
 function subscribe(onChange: () => void) {
   const queries = [matchMedia(OFF), matchMedia(STILL)];
-  for (const query of queries) query.addEventListener('change', onChange);
+  for (const query of queries) query.addEventListener("change", onChange);
   return () => {
-    for (const query of queries) query.removeEventListener('change', onChange);
+    for (const query of queries) query.removeEventListener("change", onChange);
   };
 }
 
 function getMode(): Mode {
-  if (matchMedia(OFF).matches) return 'off';
-  return matchMedia(STILL).matches ? 'still' : 'live';
+  if (matchMedia(OFF).matches) return "off";
+  return matchMedia(STILL).matches ? "still" : "live";
 }
 
 /** A lost or missing WebGL context leaves the plain foil-white controls in place. */
-class FoilBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+class FoilBoundary extends Component<
+  { children: ReactNode },
+  { failed: boolean }
+> {
   state = { failed: false };
 
   static getDerivedStateFromError() {
@@ -46,7 +59,7 @@ class FoilBoundary extends Component<{ children: ReactNode }, { failed: boolean 
  */
 export function HoloFoil() {
   const [layer, setLayer] = useState<HTMLDivElement | null>(null);
-  const mode = useSyncExternalStore<Mode>(subscribe, getMode, () => 'off');
+  const mode = useSyncExternalStore<Mode>(subscribe, getMode, () => "off");
   const host = layer?.parentElement;
 
   return (
@@ -54,13 +67,18 @@ export function HoloFoil() {
       ref={setLayer}
       aria-hidden="true"
       className={
-        'pointer-events-none absolute inset-0 z-20 mix-blend-multiply media-high-contrast:hidden forced-colors:hidden'
+        "pointer-events-none absolute inset-0 z-20 mix-blend-multiply media-high-contrast:hidden forced-colors:hidden"
       }
     >
-      {host && mode !== 'off' && (
+      {host && mode !== "off" && (
         <FoilBoundary>
           <Suspense fallback={null}>
-            <FoilCanvas host={host} still={mode === 'still'} />
+            <FoilCanvas
+              host={host}
+              still={mode === "still"}
+              finish={foilFinish}
+              motion={foilMotion}
+            />
           </Suspense>
         </FoilBoundary>
       )}
@@ -74,7 +92,7 @@ export function HoloFoil() {
  */
 export function AmbientHoloStage() {
   const [layer, setLayer] = useState<HTMLDivElement | null>(null);
-  const mode = useSyncExternalStore<Mode>(subscribe, getMode, () => 'off');
+  const mode = useSyncExternalStore<Mode>(subscribe, getMode, () => "off");
   const playback = usePlayer(selectPlayback);
 
   const isIdle = playback ? Boolean(playback.paused || playback.ended) : true;
@@ -84,15 +102,20 @@ export function AmbientHoloStage() {
     <div
       ref={setLayer}
       aria-hidden="true"
-      data-idle={isIdle ? '' : undefined}
+      data-idle={isIdle ? "" : undefined}
       className={
-        'pointer-events-none absolute inset-0 z-10 mix-blend-screen media-high-contrast:hidden forced-colors:hidden'
+        "pointer-events-none absolute inset-0 z-10 mix-blend-screen media-high-contrast:hidden forced-colors:hidden"
       }
     >
-      {host && mode !== 'off' && (
+      {host && mode !== "off" && (
         <FoilBoundary>
           <Suspense fallback={null}>
-            <AmbientHoloCanvas host={host} still={mode === 'still'} idle={isIdle} />
+            <AmbientHoloCanvas
+              host={host}
+              still={mode === "still"}
+              idle={isIdle}
+              motion={foilMotion}
+            />
           </Suspense>
         </FoilBoundary>
       )}

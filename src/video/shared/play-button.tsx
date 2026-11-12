@@ -5,7 +5,7 @@ import {
   RestartIcon as RestartIconPrimitive,
   PlayIcon as PlayIconPrimitive,
   PauseIcon as PauseIconPrimitive,
-} from '@videojs/react/icons/scaffold';
+} from './icons';
 import type { ClassValue } from 'cn';
 
 import { cn, resolveClassName } from '@/lib/resolve-class-name';

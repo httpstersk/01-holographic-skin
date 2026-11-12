@@ -2,7 +2,7 @@
 
 import { Poster as PosterPrimitive } from '@videojs/react';
 import { BufferingIndicator as BufferingIndicatorPrimitive, Controls } from '@videojs/react';
-import { SpinnerIcon as SpinnerIconPrimitive } from '@videojs/react/icons/scaffold';
+import { SpinnerIcon as SpinnerIconPrimitive } from './icons';
 import type { ClassValue } from 'cn';
 
 import { cn, resolveClassName } from '@/lib/resolve-class-name';

@@ -4,7 +4,7 @@ import { CaptionsButton as CaptionsButtonPrimitive } from '@videojs/react';
 import {
   CaptionsOffIcon as CaptionsOffIconPrimitive,
   CaptionsOnIcon as CaptionsOnIconPrimitive,
-} from '@videojs/react/icons/scaffold';
+} from './icons';
 
 import { cn, resolveClassName } from '@/lib/resolve-class-name';
 

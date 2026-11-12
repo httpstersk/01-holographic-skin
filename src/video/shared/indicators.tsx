@@ -14,7 +14,7 @@ import {
   VolumeHighIcon as VolumeHighIconPrimitive,
   VolumeLowIcon as VolumeLowIconPrimitive,
   VolumeOffIcon as VolumeOffIconPrimitive,
-} from '@videojs/react/icons/scaffold';
+} from './icons';
 import type { ReactNode } from 'react';
 
 import { cn } from '@/lib/resolve-class-name';

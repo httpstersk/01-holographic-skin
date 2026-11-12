@@ -25,6 +25,39 @@ export const muxFoilFinish = {
   chroma: 0.59,
 } satisfies FoilFinish;
 
+/** How the light moves over the foil. The defaults are the motion the website's artwork has always had. */
+export interface FoilMotion {
+  /** Groove flow speed; negative runs the other way. */
+  flow: number;
+  /** Radius of the idle drift of the light, as a fraction of the plate. */
+  drift: number;
+  driftSpeed: number;
+  /** Strength of the slow thickness pulse. */
+  breath: number;
+  /** Rings that spread from the light. */
+  ripple: number;
+  sparkle: number;
+  /** How fast the light follows the pointer, per second. */
+  follow: number;
+}
+
+export const defaultFoilMotion = {
+  flow: 1,
+  drift: 0.15,
+  driftSpeed: 1,
+  breath: 1,
+  ripple: 0,
+  sparkle: 1,
+  follow: 8,
+} satisfies FoilMotion;
+
+export function foilMotionUniforms(motion: FoilMotion) {
+  return {
+    a: [motion.flow, motion.drift, motion.driftSpeed, motion.breath] as const,
+    b: [motion.ripple, motion.sparkle, 0, 0] as const,
+  };
+}
+
 export function foilFinishUniforms(finish: FoilFinish) {
   return {
     grating: [Math.cos(finish.angle), Math.sin(finish.angle), finish.grooves, finish.thickness] as const,
@@ -79,6 +112,10 @@ uniform float pixelSize;
 uniform vec4 grating;
 uniform vec4 metal;
 uniform bool etched;
+// x: groove flow (signed), y: idle drift radius, z: drift speed, w: breathing.
+uniform vec4 motionA;
+// x: ripple from the light, y: sparkle gain.
+uniform vec4 motionB;
 
 #if defined(FOIL_PLATES)
 varying vec2 vLocal;
@@ -235,14 +272,16 @@ void main() {
   vec2 surfaceNormal = tilt + (grain - 0.5) * 0.025 * surfaceWeight;
   vec3 normal = normalize(vec3(surfaceNormal, 1.0));
 
-  vec2 light = lightPosition + vec2(sin(time * 0.4), cos(time * 0.33)) * 0.15;
+  vec2 light = lightPosition + vec2(sin(time * 0.4 * motionA.z), cos(time * 0.33 * motionA.z)) * motionA.y;
   vec3 lightDirection = normalize(vec3((light - point) * aspect * 0.9, 0.9));
   vec3 viewDirection = normalize(vec3((point - 0.5) * aspect * 0.25 + (light - 0.5) * 0.6, 1.0));
   float cosine = clamp(dot(normal, viewDirection), 0.0, 1.0);
   float ruling = dot(point * aspect, grating.xy);
-  float groove = sin(ruling * 26.0 + 2.0 * sin(point.y * 7.0) - time * 0.18);
+  float rippleDistance = length((point - lightPosition) * aspect);
+  float groove = sin(ruling * 26.0 + 2.0 * sin(point.y * 7.0) - time * 0.18 * motionA.x);
   float baseThickness = 300.0 + 170.0 * dot(point, vec2(0.7, 0.3))
-    + 180.0 * (light.x - 0.5) + 90.0 * mottling + 40.0 * sin(time * 0.25)
+    + 180.0 * (light.x - 0.5) + 90.0 * mottling + 40.0 * sin(time * 0.25) * motionA.w
+    + motionB.x * 70.0 * sin(rippleDistance * 34.0 - time * 2.6) * exp(-rippleDistance * 1.8)
     + grating.w + grating.z * groove;
 
   // How far the slope turns across one device pixel, which the film and highlight average over.
@@ -267,7 +306,7 @@ void main() {
   #ifdef FOIL_AMBIENT
     float sparkle = 0.0;
   #else
-    float sparkle = step(0.985, hash(floor(point * resolution * 0.5) + floor(time * 6.0))) * diffuse;
+    float sparkle = step(0.985, hash(floor(point * resolution * 0.5) + floor(time * 6.0))) * diffuse * motionB.y;
   #endif
 
   vec3 outputColor;

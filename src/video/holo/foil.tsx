@@ -5,7 +5,7 @@ import { useCallback, useRef, useState } from 'react';
 import { DynamicDrawUsage, type InstancedBufferAttribute, type InstancedBufferGeometry } from 'three';
 
 import { FoilCanvas } from './foil-canvas';
-import { muxFoilFinish } from './shaders/foil';
+import type { FoilFinish, FoilMotion } from './shaders/foil';
 import { foilMaterialProps, useFoilMaterial } from './use-foil-material';
 
 const MAX_PLATES = 64;
@@ -33,9 +33,14 @@ function measurePlates(
   return count;
 }
 
-function FoilPlates({ host, still }: { host: HTMLElement; still: boolean }) {
+interface FoilLook {
+  finish: FoilFinish;
+  motion: FoilMotion;
+}
+
+function FoilPlates({ host, still, finish, motion }: { host: HTMLElement; still: boolean } & FoilLook) {
   const invalidate = useThree((state) => state.invalidate);
-  const { attach, uniforms, advance } = useFoilMaterial(host, still, muxFoilFinish);
+  const { attach, uniforms, advance } = useFoilMaterial(host, still, finish, motion);
   const geometry = useRef<InstancedBufferGeometry | null>(null);
   const rects = useRef<InstancedBufferAttribute | null>(null);
   const radii = useRef<InstancedBufferAttribute | null>(null);
@@ -123,10 +128,10 @@ function FoilPlates({ host, still }: { host: HTMLElement; still: boolean }) {
   );
 }
 
-export default function FoilControlsCanvas({ host, still }: { host: HTMLElement; still: boolean }) {
+export default function FoilControlsCanvas({ host, still, finish, motion }: { host: HTMLElement; still: boolean } & FoilLook) {
   return (
     <FoilCanvas>
-      <FoilPlates host={host} still={still} />
+      <FoilPlates host={host} still={still} finish={finish} motion={motion} />
     </FoilCanvas>
   );
 }
