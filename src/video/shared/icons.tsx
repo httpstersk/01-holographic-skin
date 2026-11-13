@@ -2,14 +2,13 @@
 
 import type { Icon, IconProps, IconWeight } from "@phosphor-icons/react";
 import { Airplay } from "@phosphor-icons/react/dist/csr/Airplay";
-import { ArrowCounterClockwise } from "@phosphor-icons/react/dist/csr/ArrowCounterClockwise";
+import { ArrowClockwiseIcon } from "@phosphor-icons/react/dist/csr/ArrowClockwise";
+import { ArrowCounterClockwiseIcon } from "@phosphor-icons/react/dist/csr/ArrowCounterClockwise";
 import { ArrowsInSimple } from "@phosphor-icons/react/dist/csr/ArrowsInSimple";
 import { ArrowsOutSimple } from "@phosphor-icons/react/dist/csr/ArrowsOutSimple";
 import { CaretRight } from "@phosphor-icons/react/dist/csr/CaretRight";
 import { Check } from "@phosphor-icons/react/dist/csr/Check";
 import { CircleNotch } from "@phosphor-icons/react/dist/csr/CircleNotch";
-import { ClockClockwise } from "@phosphor-icons/react/dist/csr/ClockClockwise";
-import { ClockCounterClockwise } from "@phosphor-icons/react/dist/csr/ClockCounterClockwise";
 import { ClosedCaptioning } from "@phosphor-icons/react/dist/csr/ClosedCaptioning";
 import { Gauge } from "@phosphor-icons/react/dist/csr/Gauge";
 import { GearSix } from "@phosphor-icons/react/dist/csr/GearSix";
@@ -32,7 +31,7 @@ function icon(Glyph: Icon, weight: IconWeight = "fill") {
 
 export const PlayIcon = icon(Play);
 export const PauseIcon = icon(Pause);
-export const RestartIcon = icon(ArrowCounterClockwise);
+export const RestartIcon = icon(ArrowCounterClockwiseIcon);
 export const VolumeHighIcon = icon(SpeakerHigh);
 export const VolumeLowIcon = icon(SpeakerLow);
 export const VolumeOffIcon = icon(SpeakerX);
@@ -52,8 +51,8 @@ export const CheckIcon = icon(Check);
 export const SwitchesIcon = icon(SlidersHorizontal);
 export const SpeechIcon = icon(Translate);
 export const SpeedIcon = icon(Gauge);
-export const SeekBackIcon = icon(ClockCounterClockwise);
-export const SeekForwardIcon = icon(ClockClockwise);
+export const SeekBackIcon = icon(ArrowCounterClockwiseIcon);
+export const SeekForwardIcon = icon(ArrowClockwiseIcon);
 
 export function SpinnerIcon({ className, ...props }: IconProps) {
   return (

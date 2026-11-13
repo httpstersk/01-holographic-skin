@@ -77,11 +77,11 @@ varying vec2 vUv;
 
 #ifdef FOIL_PLATES
 attribute vec4 plateRect;
-attribute float plateRadius;
+attribute vec2 plateShape;
 uniform vec2 resolution;
 varying vec2 vLocal;
 varying vec2 vHalfSize;
-varying float vRadius;
+varying vec2 vPlateShape;
 #endif
 
 void main() {
@@ -91,7 +91,7 @@ void main() {
     vUv = vec2(point.x, 1.0 - point.y);
     vLocal = (localUv - 0.5) * plateRect.zw;
     vHalfSize = plateRect.zw * 0.5;
-    vRadius = plateRadius;
+    vPlateShape = plateShape;
     gl_Position = vec4(vUv * 2.0 - 1.0, 0.0, 1.0);
   #else
     vUv = position.xy * 0.5 + 0.5;
@@ -120,7 +120,7 @@ uniform vec4 motionB;
 #if defined(FOIL_PLATES)
 varying vec2 vLocal;
 varying vec2 vHalfSize;
-varying float vRadius;
+varying vec2 vPlateShape;
 #elif defined(FOIL_AMBIENT)
 uniform float opacity;
 #else
@@ -169,7 +169,9 @@ float unpackHeight(vec4 texel) {
 float sampleSurface(vec2 point, vec2 aspect, out vec4 shape) {
   shape = vec4(0.0);
   #if defined(FOIL_PLATES)
-    float radius = min(vRadius, min(vHalfSize.x, vHalfSize.y));
+    // The flat timeline fills its quad so the white base cannot show through at the edge.
+    if (vPlateShape.y < 0.5) return 1.0;
+    float radius = min(vPlateShape.x, min(vHalfSize.x, vHalfSize.y));
     float distance = roundedDistance(vLocal, vHalfSize, radius);
     shape = roundedRelief(vLocal, vHalfSize, radius, distance);
     return smoothstep(0.0, 1.0, -distance);

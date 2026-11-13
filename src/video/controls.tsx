@@ -14,7 +14,6 @@ import { FullscreenButton, ScreenControls } from "@/video/shared/screen-controls
 import { SettingsMenu } from "@/video/shared/settings-menu";
 import { TimeElapsed, TimeTotal } from "@/video/shared/time-display";
 import { type ThumbnailSlot, TimeSlider } from "@/video/shared/time-slider";
-import { Tone } from "@/video/shared/tone";
 import { ButtonTooltip } from "@/video/shared/tooltip";
 import { VolumePopover } from "@/video/shared/volume-popover";
 import { VideoBufferingIndicator } from "@/video/shared/video-feedback";
@@ -93,16 +92,11 @@ export function VideoControls({ renderThumbnail }: ThumbnailSlot = {}) {
             <SettingsMenu buttonClassName={UTILITY} />
             <FullscreenButton className={UTILITY} />
           </div>
-          <Tone tone="ghost">
-            <div className={SCRUBBER_BAR} data-holo="" data-holo-interactive="">
-              <TimeElapsed className="min-w-[5ch] justify-end" />
-              <TimeSlider
-                className={SLIDER}
-                renderThumbnail={renderThumbnail}
-              />
-              <TimeTotal className="min-w-[5ch]" />
-            </div>
-          </Tone>
+          <div className={SCRUBBER_BAR} data-holo="flat" data-holo-interactive="">
+            <TimeElapsed className="min-w-[5ch] justify-end" />
+            <TimeSlider className={SLIDER} renderThumbnail={renderThumbnail} />
+            <TimeTotal className="min-w-[5ch]" />
+          </div>
         </Tooltip.Provider>
         <HoloFoil />
       </Controls.Content>

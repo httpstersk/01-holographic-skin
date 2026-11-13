@@ -18,7 +18,7 @@ function measurePlates(
   host: HTMLElement,
   plates: HTMLElement[],
   rects: InstancedBufferAttribute,
-  radii: InstancedBufferAttribute
+  shapes: InstancedBufferAttribute
 ) {
   const origin = host.getBoundingClientRect();
   let count = 0;
@@ -26,11 +26,12 @@ function measurePlates(
     const { left, top, width, height } = plate.getBoundingClientRect();
     if (width < 1 || height < 1) continue;
     rects.setXYZW(count, left - origin.left, top - origin.top, width, height);
-    radii.setX(count, Number.parseFloat(getComputedStyle(plate).borderTopLeftRadius) || 0);
+    const radius = Number.parseFloat(getComputedStyle(plate).borderTopLeftRadius) || 0;
+    shapes.setXY(count, radius, plate.dataset.holo === 'flat' ? 0 : 1);
     count++;
   }
   rects.needsUpdate = true;
-  radii.needsUpdate = true;
+  shapes.needsUpdate = true;
   return count;
 }
 
@@ -46,11 +47,11 @@ function FoilPlates({ finish, host, motion, still }: { host: HTMLElement; still:
   const { attach, uniforms, advance } = useFoilMaterial(host, still, finish, motion);
   const geometry = useRef<InstancedBufferGeometry | null>(null);
   const rects = useRef<InstancedBufferAttribute | null>(null);
-  const radii = useRef<InstancedBufferAttribute | null>(null);
+  const shapes = useRef<InstancedBufferAttribute | null>(null);
   const plates = useRef<HTMLElement[]>([]);
   const layoutDirty = useRef(true);
   const [rectData] = useState(() => new Float32Array(MAX_PLATES * 4));
-  const [radiusData] = useState(() => new Float32Array(MAX_PLATES));
+  const [shapeData] = useState(() => new Float32Array(MAX_PLATES * 2));
 
   const attachGeometry = useCallback(
     (instance: InstancedBufferGeometry | null) => {
@@ -97,10 +98,10 @@ function FoilPlates({ finish, host, motion, still }: { host: HTMLElement; still:
 
   useFrame(({ size, viewport }, delta) => {
     const ready = advance(size.width, size.height, delta, viewport.dpr);
-    if (!ready || !geometry.current || !rects.current || !radii.current) return;
+    if (!ready || !geometry.current || !rects.current || !shapes.current) return;
 
     if (layoutDirty.current) {
-      geometry.current.instanceCount = measurePlates(host, plates.current, rects.current, radii.current);
+      geometry.current.instanceCount = measurePlates(host, plates.current, rects.current, shapes.current);
       layoutDirty.current = false;
     }
 
@@ -120,9 +121,9 @@ function FoilPlates({ finish, host, motion, still }: { host: HTMLElement; still:
           usage={DynamicDrawUsage}
         />
         <instancedBufferAttribute
-          args={[radiusData, 1]}
-          attach="attributes-plateRadius"
-          ref={radii}
+          args={[shapeData, 2]}
+          attach="attributes-plateShape"
+          ref={shapes}
           usage={DynamicDrawUsage}
         />
       </instancedBufferGeometry>
