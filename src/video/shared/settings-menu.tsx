@@ -19,7 +19,7 @@ import type { ComponentType, ReactNode } from "react";
 import { cn } from "@/lib/resolve-class-name";
 import { Button } from "@/video/shared/button";
 import {
-  CaptionsOffIcon,
+  CaptionsIcon,
   ChevronIcon,
   GearIcon,
   SpeechIcon,
@@ -27,6 +27,7 @@ import {
   SwitchesIcon,
 } from "@/video/shared/icons";
 import { RadioItem } from "@/video/shared/menu-item";
+import { popupClass } from "@/video/shared/popup-styles";
 import { ButtonTooltip } from "@/video/shared/tooltip";
 
 const contentClass = cn(
@@ -86,7 +87,7 @@ const settings = [
   { group: QualityRadioGroup, icon: SwitchesIcon, label: qualityText },
   { group: AudioTrackRadioGroup, icon: SpeechIcon, label: audioText },
   { group: PlaybackRateRadioGroup, icon: SpeedIcon, label: speedText },
-  { group: CaptionsRadioGroup, icon: CaptionsOffIcon, label: captionsText },
+  { group: CaptionsRadioGroup, icon: CaptionsIcon, label: captionsText },
 ] satisfies readonly SubmenuProps[];
 
 /** Renders the submenu and its first item, which Video.js uses to return to the parent. */
@@ -157,23 +158,8 @@ export function SettingsMenu({
       </ButtonTooltip>
       <Menu.Popup
         className={cn(
-          'm-0 overflow-visible border-0 text-inherit',
-          'media-transitioning:opacity-0 media-transitioning:blur-media-hidden-popup media-transitioning:scale-media-hidden-popup',
-          'data-starting-style:transform-[translate(var(--media-popup-translate-x-distance,0),var(--media-popup-translate-y-distance,0))]',
-          'data-ending-style:transform-none',
-          'data-[side=top]:origin-bottom data-[side=bottom]:origin-top data-[side=left]:origin-right data-[side=right]:origin-left',
-          'data-[side=top]:[--media-popup-translate-y-distance:var(--media-popup-translate-distance)]',
-          'data-[side=bottom]:[--media-popup-translate-y-distance:calc(var(--media-popup-translate-distance)*-1)]',
-          'data-[side=left]:[--media-popup-translate-x-distance:var(--media-popup-translate-distance)]',
-          'data-[side=right]:[--media-popup-translate-x-distance:calc(var(--media-popup-translate-distance)*-1)]',
-          'before:pointer-events-auto before:absolute',
-          'data-[side=top]:before:inset-x-0 data-[side=top]:before:top-full',
-          'data-[side=bottom]:before:inset-x-0 data-[side=bottom]:before:bottom-full',
-          'data-[side=left]:before:inset-y-0 data-[side=left]:before:left-full',
-          'data-[side=right]:before:inset-y-0 data-[side=right]:before:right-full',
-          'data-[side=top]:before:h-(--media-popup-side-offset) data-[side=bottom]:before:h-(--media-popup-side-offset)',
-          'data-[side=left]:before:w-(--media-popup-side-offset) data-[side=right]:before:w-(--media-popup-side-offset)',
-          'z-20 m-0 min-w-48 max-w-(--media-menu-available-width) overflow-hidden! rounded-media-popup card-media p-0 text-media-popover-foreground transition-media-menu-resize',
+          popupClass,
+          'z-20 min-w-48 max-w-(--media-menu-available-width) overflow-hidden! rounded-media-popup card-media p-0 text-media-popover-foreground transition-media-menu-resize',
           '[--media-popup-side-offset:var(--media-popover-side-offset)] [--media-popover-side-offset:calc(var(--media-spacing)*4)]',
           'max-h-[min(var(--media-menu-available-height,--spacing(56)),--spacing(56))] overscroll-none',
           'h-(--media-menu-height) w-(--media-menu-width)',

@@ -1,10 +1,7 @@
 /** @jsxImportSource react */
 
 import { CaptionsButton as CaptionsButtonPrimitive } from '@videojs/react';
-import {
-  CaptionsOffIcon as CaptionsOffIconPrimitive,
-  CaptionsOnIcon as CaptionsOnIconPrimitive,
-} from '@/video/shared/icons';
+import { CaptionsIcon } from '@/video/shared/icons';
 
 import { cn, resolveClassName } from '@/lib/resolve-class-name';
 
@@ -18,16 +15,11 @@ export type CaptionsButtonProps = Omit<CaptionsButtonPrimitive.Props, 'children'
 export function CaptionsButton({ className, ...props }: CaptionsButtonProps = {}) {
   return (
     <CaptionsButtonPrimitive
-      className={(state) => cn('group/captions', resolveClassName(className, state))}
+      className={(state) => cn(resolveClassName(className, state))}
       render={<Button />}
       {...props}
     >
-      <CaptionsOffIconPrimitive
-        className={cn('col-start-1 row-start-1 size-4.5', 'group-data-active/captions:hidden')}
-      />
-      <CaptionsOnIconPrimitive
-        className={cn('col-start-1 row-start-1 size-4.5', 'hidden group-data-active/captions:block')}
-      />
+      <CaptionsIcon className="col-start-1 row-start-1 size-4.5" />
     </CaptionsButtonPrimitive>
   );
 }

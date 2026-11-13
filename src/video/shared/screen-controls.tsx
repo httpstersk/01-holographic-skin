@@ -7,12 +7,10 @@ import {
   FullscreenButton as FullscreenButtonPrimitive,
 } from "@videojs/react";
 import {
-  CastEnterIcon as CastEnterIconPrimitive,
-  CastExitIcon as CastExitIconPrimitive,
-  PipEnterIcon as PipEnterIconPrimitive,
-  PipExitIcon as PipExitIconPrimitive,
-  FullscreenEnterIcon as FullscreenEnterIconPrimitive,
-  FullscreenExitIcon as FullscreenExitIconPrimitive,
+  CastIcon,
+  FullscreenEnterIcon,
+  FullscreenExitIcon,
+  PipIcon,
 } from "@/video/shared/icons";
 import type { ClassValue } from "cn";
 
@@ -22,35 +20,20 @@ import { AirPlayButton } from "@/video/shared/airplay-button";
 import { Button, HoverLabel } from "@/video/shared/button";
 import { ButtonTooltip } from "@/video/shared/tooltip";
 
+const screenTooltipOffset = "[--media-tooltip-side-offset:calc(var(--media-spacing)*3)]!";
+
 /** Shows the current casting state on the Video.js cast control. */
 export function CastButton({
   className,
   label,
 }: { className?: ClassValue; label?: string } = {}) {
   return (
-    <ButtonTooltip
-      popupClassName={
-        "[--media-tooltip-side-offset:calc(var(--media-spacing)*3)]!"
-      }
-    >
+    <ButtonTooltip popupClassName={screenTooltipOffset}>
       <CastButtonPrimitive
-        className={(state) =>
-          cn("group/cast", resolveClassName(className, state))
-        }
+        className={(state) => cn(resolveClassName(className, state))}
         render={<Button />}
       >
-        <CastEnterIconPrimitive
-          className={cn(
-            "col-start-1 row-start-1 size-4.5",
-            "group-data-[cast-state=connected]/cast:hidden",
-          )}
-        />
-        <CastExitIconPrimitive
-          className={cn(
-            "col-start-1 row-start-1 size-4.5",
-            "hidden group-data-[cast-state=connected]/cast:block",
-          )}
-        />
+        <CastIcon className="col-start-1 row-start-1 size-4.5" />
         {label ? <HoverLabel>{label}</HoverLabel> : null}
       </CastButtonPrimitive>
     </ButtonTooltip>
@@ -66,25 +49,21 @@ export function FullscreenButton({
   iconClassName?: ClassValue;
 } = {}) {
   return (
-    <ButtonTooltip
-      popupClassName={
-        "[--media-tooltip-side-offset:calc(var(--media-spacing)*3)]!"
-      }
-    >
+    <ButtonTooltip popupClassName={screenTooltipOffset}>
       <FullscreenButtonPrimitive
         className={(state) =>
           cn("group/fullscreen", resolveClassName(className, state))
         }
         render={<Button />}
       >
-        <FullscreenEnterIconPrimitive
+        <FullscreenEnterIcon
           className={cn(
             "col-start-1 row-start-1 size-4.5",
             "hidden group-not-data-fullscreen/fullscreen:block",
             iconClassName,
           )}
         />
-        <FullscreenExitIconPrimitive
+        <FullscreenExitIcon
           className={cn(
             "col-start-1 row-start-1 size-4.5",
             "hidden group-data-fullscreen/fullscreen:block",
@@ -102,36 +81,17 @@ export function PiPButton({
   label,
 }: { className?: ClassValue; label?: string } = {}) {
   return (
-    <ButtonTooltip
-      popupClassName={
-        "[--media-tooltip-side-offset:calc(var(--media-spacing)*3)]!"
-      }
-    >
+    <ButtonTooltip popupClassName={screenTooltipOffset}>
       <PiPButtonPrimitive
-        className={(state) =>
-          cn("group/pip", resolveClassName(className, state))
-        }
+        className={(state) => cn(resolveClassName(className, state))}
         render={<Button />}
       >
-        <PipEnterIconPrimitive
-          className={cn(
-            "col-start-1 row-start-1 size-4.5",
-            "group-data-pip/pip:hidden",
-          )}
-        />
-        <PipExitIconPrimitive
-          className={cn(
-            "col-start-1 row-start-1 size-4.5",
-            "hidden group-data-pip/pip:block",
-          )}
-        />
+        <PipIcon className="col-start-1 row-start-1 size-4.5" />
         {label ? <HoverLabel>{label}</HoverLabel> : null}
       </PiPButtonPrimitive>
     </ButtonTooltip>
   );
 }
-
-
 /** Each button opens out its name on hover or focus. */
 const SCREEN_BUTTON =
   "h-(--holo-utility-size)! w-auto! min-w-(--holo-utility-size) rounded-full! px-2.5!";
@@ -143,9 +103,7 @@ export function ScreenControls() {
       <AirPlayButton
         className={SCREEN_BUTTON}
         label="AirPlay"
-        popupClassName={
-          "[--media-tooltip-side-offset:calc(var(--media-spacing)*3)]!"
-        }
+        popupClassName={screenTooltipOffset}
       />
       <CastButton className={SCREEN_BUTTON} label="Cast" />
       <PiPButton className={SCREEN_BUTTON} label="Picture in picture" />

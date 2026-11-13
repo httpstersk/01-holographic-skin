@@ -1,19 +1,20 @@
 import { storageKey } from './config';
 
 /** Storage can be blocked or full; every read falls back and every write is best effort. */
-export function readStored<Value>(key: string, fallback: Value): Value {
+export function readStoredBoolean(key: string, fallback: boolean): boolean {
   try {
     const value = localStorage.getItem(`${storageKey}:${key}`);
-
-    return value === null ? fallback : (JSON.parse(value) as Value);
+    if (value === 'true') return true;
+    if (value === 'false') return false;
   } catch {
-    return fallback;
+    // Storage may be blocked.
   }
+  return fallback;
 }
 
-export function writeStored(key: string, value: unknown): void {
+export function writeStoredBoolean(key: string, value: boolean): void {
   try {
-    localStorage.setItem(`${storageKey}:${key}`, JSON.stringify(value));
+    localStorage.setItem(`${storageKey}:${key}`, String(value));
   } catch {
     // The value still applies for this visit.
   }

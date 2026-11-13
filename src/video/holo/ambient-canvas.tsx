@@ -19,7 +19,7 @@ interface AmbientProps {
 
 /** Fades the ambient material as playback changes without updating React on each frame. */
 function AmbientFoil({ host, idle, motion, still }: AmbientProps) {
-  const { attach, uniforms, advance } = useFoilMaterial(host, still, etchedFoilFinish, motion);
+  const { advance, attach, parameters, lookUniforms } = useFoilMaterial(host, still, etchedFoilFinish, motion);
   const opacity = useRef(idle ? 1 : 0);
 
   useFrame(({ invalidate, size, viewport }, delta) => {
@@ -43,12 +43,12 @@ function AmbientFoil({ host, idle, motion, still }: AmbientProps) {
   return (
     <mesh frustumCulled={false}>
       <planeGeometry args={[2, 2]} />
-      {/* Updating the target requests a frame even when the glow is at rest. */}
       <rawShaderMaterial
+        args={[parameters]}
         ref={attach}
         {...foilMaterialProps}
         defines={ambientShader}
-        uniforms={uniforms}
+        uniforms={lookUniforms}
         uniforms-opacity-value={idle ? 1 : 0}
       />
     </mesh>

@@ -14,10 +14,10 @@ const POSTER =
 const CHAPTERS = "./cosmic-dawn-chapters.vtt";
 
 /** `media` carries the workbench's playback options: autoplay, muted, loop, and preload. */
-export function Player({ media }: { media?: PlaybackProps }) {
+export function Player({ dir, media }: { dir?: "ltr" | "rtl"; media?: PlaybackProps }) {
   return (
     <VideoPlayer poster={POSTER}>
-      <VideoSkin>
+      <VideoSkin dir={dir}>
         <MuxVideo {...media} src={SRC} playsInline crossOrigin="">
           <track
             kind="chapters"

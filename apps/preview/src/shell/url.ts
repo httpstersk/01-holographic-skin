@@ -11,10 +11,16 @@ export function createUrlWriter(delay = 250): (url: string) => void {
     clearTimeout(timer);
     timer = undefined;
 
-    if (pending === undefined) return;
-
-    history.replaceState(history.state, '', pending);
+    const url = pending;
     pending = undefined;
+    if (url === undefined || new URL(url, location.href).href === location.href) return;
+
+    try {
+      history.replaceState(history.state, '', url);
+    } catch (error) {
+      // A browser can still reject a write after a burst of changes or during page teardown.
+      if (!(error instanceof DOMException && error.name === 'SecurityError')) throw error;
+    }
   };
 
   window.addEventListener('pagehide', flush);

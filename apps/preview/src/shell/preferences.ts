@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
 
 export const PREFERENCE_QUERIES = [
   ['reduced motion', '(prefers-reduced-motion: reduce)'],
@@ -14,27 +14,24 @@ export type PreferenceName = (typeof PREFERENCE_QUERIES)[number][0];
 
 export type Preferences = Readonly<Record<PreferenceName, boolean>>;
 
-function readPreferences(): Preferences {
-  // SAFETY: the object is built from every query name, so it carries every key of the record type.
-  return Object.fromEntries(
-    PREFERENCE_QUERIES.map(([name, query]) => [name, matchMedia(query).matches])
-  ) as Preferences;
+const queries = PREFERENCE_QUERIES.map(([name, query]) => [name, matchMedia(query)] as const);
+let snapshot: Preferences | undefined;
+
+function getSnapshot(): Preferences {
+  if (!snapshot || queries.some(([name, query]) => snapshot?.[name] !== query.matches)) {
+    snapshot = Object.fromEntries(queries.map(([name, query]) => [name, query.matches])) as Preferences;
+  }
+  return snapshot;
 }
 
-/** The detected preferences, kept current as the environment (or DevTools' rendering emulation) changes them. */
+function subscribe(listener: () => void) {
+  for (const [, query] of queries) query.addEventListener('change', listener);
+  return () => {
+    for (const [, query] of queries) query.removeEventListener('change', listener);
+  };
+}
+
+/** Keeps the browser's detected preferences current, including DevTools emulation. */
 export function usePreferences(): Preferences {
-  const [preferences, setPreferences] = useState(readPreferences);
-
-  useEffect(() => {
-    const update = () => setPreferences(readPreferences());
-    const queries = PREFERENCE_QUERIES.map(([, query]) => matchMedia(query));
-
-    for (const query of queries) query.addEventListener('change', update);
-
-    return () => {
-      for (const query of queries) query.removeEventListener('change', update);
-    };
-  }, []);
-
-  return preferences;
+  return useSyncExternalStore(subscribe, getSnapshot);
 }

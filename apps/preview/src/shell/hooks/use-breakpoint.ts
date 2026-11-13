@@ -1,19 +1,17 @@
-import * as React from 'react';
+import { useMemo, useSyncExternalStore } from 'react';
 
 /** Whether the viewport is narrower than `width` pixels, kept current as it resizes. */
 export function useBreakpoint(width: number): boolean {
-  const query = `(max-width: ${width - 1}px)`;
-  const [below, setBelow] = React.useState(() => window.matchMedia(query).matches);
+  const { subscribe, getSnapshot } = useMemo(() => {
+    const query = window.matchMedia(`(width < ${width}px)`);
+    return {
+      getSnapshot: () => query.matches,
+      subscribe(listener: () => void) {
+        query.addEventListener('change', listener);
+        return () => query.removeEventListener('change', listener);
+      },
+    };
+  }, [width]);
 
-  React.useEffect(() => {
-    const mql = window.matchMedia(query);
-    const onChange = () => setBelow(mql.matches);
-
-    onChange();
-    mql.addEventListener('change', onChange);
-
-    return () => mql.removeEventListener('change', onChange);
-  }, [query]);
-
-  return below;
+  return useSyncExternalStore(subscribe, getSnapshot);
 }

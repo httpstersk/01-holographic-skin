@@ -1,8 +1,8 @@
 /** @jsxImportSource react */
 
 import { selectVolume } from "@videojs/core/dom";
-import { useContainer, usePlayer } from "@videojs/react";
-import { useEffect, useRef } from "react";
+import { usePlayer } from "@videojs/react";
+import { useCallback } from "react";
 
 import { playPop, unlockPopSound } from "@/video/shared/pop-sound";
 
@@ -17,14 +17,11 @@ function isDisabled(element: Element) {
   );
 }
 
-/** Plays a bubble pop when a mouse pointer enters a control. Silent while muted. */
-export function HoverSound() {
-  const container = useContainer();
-  const volume = usePlayer(selectVolume);
-  const silent = useRef(false);
-  silent.current = !volume || volume.muted || volume.volume === 0;
+/** Binds one hover sound listener to the player and reads volume when it is needed. */
+export function useHoverSound() {
+  const player = usePlayer();
 
-  useEffect(() => {
+  return useCallback((container: HTMLDivElement | null) => {
     if (!container) return;
     const events = new AbortController();
     const options = { signal: events.signal };
@@ -34,18 +31,17 @@ export function HoverSound() {
     container.addEventListener(
       "pointerover",
       (event) => {
-        if (event.pointerType !== "mouse" || silent.current) return;
+        if (event.pointerType !== "mouse") return;
         const target = event.target instanceof Element ? event.target.closest(TARGET) : null;
         if (!target || !container.contains(target) || isDisabled(target)) return;
         // Moving between a button's own icon and label is still the same hover.
         if (event.relatedTarget instanceof Node && target.contains(event.relatedTarget)) return;
-        playPop();
+        const volume = selectVolume(player.state);
+        if (volume && !volume.muted && volume.volume > 0) playPop();
       },
       options,
     );
 
     return () => events.abort();
-  }, [container]);
-
-  return null;
+  }, [player]);
 }

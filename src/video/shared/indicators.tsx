@@ -5,12 +5,10 @@ import {
   VolumeIndicator as VolumeIndicatorPrimitive,
 } from '@videojs/react';
 import {
-  CaptionsOnIcon as CaptionsOnIconPrimitive,
-  CaptionsOffIcon as CaptionsOffIconPrimitive,
+  CaptionsIcon,
   FullscreenEnterIcon as FullscreenEnterIconPrimitive,
   FullscreenExitIcon as FullscreenExitIconPrimitive,
-  PipEnterIcon as PipEnterIconPrimitive,
-  PipExitIcon as PipExitIconPrimitive,
+  PipIcon,
   VolumeHighIcon as VolumeHighIconPrimitive,
   VolumeLowIcon as VolumeLowIconPrimitive,
   VolumeOffIcon as VolumeOffIconPrimitive,
@@ -52,11 +50,8 @@ function StatusIndicator() {
         'group/input-status col-start-2 row-start-1 self-start mt-3'
       )}
     >
-      <CaptionsOnIconPrimitive
-        className={cn('hidden size-4.5 shrink-0', 'group-data-[status=captions-on]/input-status:block')}
-      />
-      <CaptionsOffIconPrimitive
-        className={cn('hidden size-4.5 shrink-0', 'group-data-[status=captions-off]/input-status:block')}
+      <CaptionsIcon
+        className="hidden size-4.5 shrink-0 group-data-[status=captions-on]/input-status:block group-data-[status=captions-off]/input-status:block"
       />
       <FullscreenEnterIconPrimitive
         className={cn('hidden size-4.5 shrink-0', 'group-data-[status=fullscreen]/input-status:block')}
@@ -64,9 +59,8 @@ function StatusIndicator() {
       <FullscreenExitIconPrimitive
         className={cn('hidden size-4.5 shrink-0', 'group-data-[status=exit-fullscreen]/input-status:block')}
       />
-      <PipEnterIconPrimitive className={cn('hidden size-4.5 shrink-0', 'group-data-[status=pip]/input-status:block')} />
-      <PipExitIconPrimitive
-        className={cn('hidden size-4.5 shrink-0', 'group-data-[status=exit-pip]/input-status:block')}
+      <PipIcon
+        className="hidden size-4.5 shrink-0 group-data-[status=pip]/input-status:block group-data-[status=exit-pip]/input-status:block"
       />
       <StatusIndicatorPrimitive.Value />
     </StatusIndicatorPrimitive.Root>

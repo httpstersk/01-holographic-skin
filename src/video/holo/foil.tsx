@@ -44,7 +44,7 @@ interface FoilLook {
 /** Updates one mesh for every visible foil plate in the controls. */
 function FoilPlates({ finish, host, motion, still }: { host: HTMLElement; still: boolean } & FoilLook) {
   const invalidate = useThree((state) => state.invalidate);
-  const { attach, uniforms, advance } = useFoilMaterial(host, still, finish, motion);
+  const { advance, attach, parameters, lookUniforms } = useFoilMaterial(host, still, finish, motion);
   const geometry = useRef<InstancedBufferGeometry | null>(null);
   const rects = useRef<InstancedBufferAttribute | null>(null);
   const shapes = useRef<InstancedBufferAttribute | null>(null);
@@ -127,7 +127,13 @@ function FoilPlates({ finish, host, motion, still }: { host: HTMLElement; still:
           usage={DynamicDrawUsage}
         />
       </instancedBufferGeometry>
-      <rawShaderMaterial ref={attach} {...foilMaterialProps} defines={plateShader} uniforms={uniforms} />
+      <rawShaderMaterial
+        args={[parameters]}
+        ref={attach}
+        {...foilMaterialProps}
+        defines={plateShader}
+        uniforms={lookUniforms}
+      />
     </mesh>
   );
 }

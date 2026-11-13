@@ -7,8 +7,8 @@ export function resolveClassName<State>(className: ClassName<State>, state: Stat
   return typeof className === 'function' ? className(state) : className;
 }
 
-/** The `media` keys from the Skin Tailwind theme, by `cn` theme group. Tests keep it equal to `styles/tailwind.css`. */
-export const mediaTheme = {
+/** The custom utility names declared by the skin's Tailwind theme. */
+const mediaTheme = {
   blur: ['media-hidden', 'media-hidden-popup'],
   color: [
     'media-accent',

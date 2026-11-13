@@ -9,13 +9,12 @@ import {
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   useSidebar,
 } from '@preview/shell/components/ui/sidebar';
 import { Slider } from '@preview/shell/components/ui/slider';
 import { Switch } from '@preview/shell/components/ui/switch';
-import { type ReactNode, useId, useRef, useState } from 'react';
+import { type ReactNode, useId, useState } from 'react';
 
 import { locales } from './config';
 import {
@@ -72,7 +71,6 @@ export function OptionsPanel({ id, params, onParamsChange, preferences }: Option
   return (
     <Sidebar
       id={id}
-      side="right"
       aria-label="Options"
       onKeyDown={(event) => {
         if (event.key === 'Escape' && !event.defaultPrevented) {
@@ -158,12 +156,9 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 
   return (
     <SidebarGroup role="region" aria-labelledby={headingId} className="border-b p-4">
-      <SidebarGroupLabel
-        render={<h3 id={headingId} />}
-        className="text-muted-foreground h-auto px-0 pb-3 text-xs font-medium"
-      >
+      <h3 id={headingId} className="text-muted-foreground pb-3 text-xs font-medium">
         {title}
-      </SidebarGroupLabel>
+      </h3>
       <SidebarGroupContent className="grid auto-rows-[minmax(2rem,auto)] grid-cols-[1fr_auto] items-center gap-x-3 gap-y-3">
         {children}
       </SidebarGroupContent>
@@ -174,7 +169,6 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 /** The player's width in the preview: a slider with ticks where the skins' layouts change, and a field for exact widths. */
 function WidthControl({ value, onChange }: { value: number; onChange: (value: number) => void }) {
   const id = useId();
-  const dragging = useRef(false);
   const [draft, setDraft] = useState<string | null>(null);
   const clamp = (width: number) =>
     Number.isFinite(width) ? Math.min(PLAYER_WIDTH.max, Math.max(PLAYER_WIDTH.min, Math.round(width))) : value;
@@ -216,20 +210,13 @@ function WidthControl({ value, onChange }: { value: number; onChange: (value: nu
           max={PLAYER_WIDTH.max}
           step={1}
           value={value}
-          onPointerDownCapture={() => {
-            dragging.current = true;
-          }}
-          onPointerUpCapture={() => {
-            dragging.current = false;
-          }}
-          onPointerCancelCapture={() => {
-            dragging.current = false;
-          }}
-          onValueChange={(next) => {
+          onValueChange={(next, { reason }) => {
             if (typeof next !== 'number') return;
 
             // Snap pointer drags near common layout breakpoints; keyboard and number entry stay precise.
-            const stop = dragging.current ? PLAYER_WIDTH.stops.find((stop) => Math.abs(stop - next) <= 12) : undefined;
+            const stop = reason === 'drag' || reason === 'track-press'
+              ? PLAYER_WIDTH.stops.find((stop) => Math.abs(stop - next) <= 12)
+              : undefined;
 
             onChange(stop ?? next);
           }}

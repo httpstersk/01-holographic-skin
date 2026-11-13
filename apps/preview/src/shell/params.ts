@@ -93,7 +93,12 @@ export type PlaybackProps = ReturnType<typeof playbackProps>;
 const RTL_LANGUAGES = new Set(['ar', 'fa', 'he', 'ps', 'sd', 'ug', 'ur', 'yi', 'ckb', 'dv']);
 
 export function localeDirection(locale: string): 'ltr' | 'rtl' {
-  return RTL_LANGUAGES.has(locale.split('-')[0]!) ? 'rtl' : 'ltr';
+  const [language] = locale.split('-');
+  return RTL_LANGUAGES.has(language) ? 'rtl' : 'ltr';
+}
+
+export function playerDirection({ dir, locale }: WorkbenchParams): 'ltr' | 'rtl' {
+  return dir === 'auto' ? localeDirection(locale) : dir;
 }
 
 const LANGUAGE_NAMES = new Intl.DisplayNames('en', { type: 'language' });
@@ -111,5 +116,5 @@ export function applyDocumentParams(value: WorkbenchParams): void {
 
   root.style.colorScheme = value.scheme === 'auto' ? '' : value.scheme;
   root.lang = value.locale;
-  root.dir = value.dir === 'auto' ? localeDirection(value.locale) : value.dir;
+  root.dir = playerDirection(value);
 }

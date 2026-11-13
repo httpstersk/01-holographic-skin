@@ -1,5 +1,5 @@
 import { useThree } from '@react-three/fiber';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { NoBlending, type RawShaderMaterial, Vector2, Vector4 } from 'three';
 
 import { foilIdleMotionSeconds, foilLightEpsilon } from '@/video/holo/motion';
@@ -26,20 +26,25 @@ export const foilMaterialProps = {
 const center = { x: 0.5, y: 0.5 };
 type LightPoint = typeof center;
 
-function createUniforms(finish: FoilFinish, motion: FoilMotion) {
+function createLookUniforms(finish: FoilFinish, motion: FoilMotion) {
   const { grating, metal, etched } = foilFinishUniforms(finish);
   const { a, b } = foilMotionUniforms(motion);
   return {
-    resolution: { value: new Vector2(1, 1) },
-    lightPosition: { value: new Vector2(center.x, center.y) },
-    time: { value: 0 },
     relief: { value: 4.5 },
-    pixelSize: { value: 1 },
     grating: { value: new Vector4(...grating) },
     metal: { value: new Vector4(...metal) },
     etched: { value: etched },
     motionA: { value: new Vector4(...a) },
     motionB: { value: new Vector4(...b) },
+  };
+}
+
+function createFrameUniforms() {
+  return {
+    resolution: { value: new Vector2(1, 1) },
+    lightPosition: { value: new Vector2(center.x, center.y) },
+    time: { value: 0 },
+    pixelSize: { value: 1 },
     opacity: { value: 0 },
   };
 }
@@ -47,20 +52,18 @@ function createUniforms(finish: FoilFinish, motion: FoilMotion) {
 /** Bridges React settings and DOM light input to the demand-driven Three.js material. */
 export function useFoilMaterial(host: HTMLElement, still: boolean, finish: FoilFinish, motion: FoilMotion) {
   const invalidate = useThree((state) => state.invalidate);
-  const material = useRef<RawShaderMaterial | null>(null);
   const light = useRef({ inView: false, pointer: null as LightPoint | null, focus: null as LightPoint | null });
-  const [uniforms] = useState(() => createUniforms(finish, motion));
-
-  // Fiber draws on demand, so a changed finish or motion needs an explicit invalidation.
-  useEffect(() => invalidate(), [finish, motion, invalidate]);
+  const [parameters] = useState(() => ({ uniforms: createFrameUniforms() }));
+  // A changed uniforms prop requests a frame from Fiber's demand-driven canvas.
+  const lookUniforms = useMemo(() => createLookUniforms(finish, motion), [finish, motion]);
 
   const attach = useCallback(
     (instance: RawShaderMaterial | null) => {
       if (!instance) return;
-      material.current = instance;
       const state = light.current;
       const root = host.closest<HTMLElement>('.media-skin') ?? host;
-      const intersection = new IntersectionObserver(([entry]) => {
+      const intersection = new IntersectionObserver((entries) => {
+        const entry = entries.at(-1);
         state.inView = entry?.isIntersecting ?? false;
         if (state.inView) invalidate();
       });
@@ -107,7 +110,6 @@ export function useFoilMaterial(host: HTMLElement, still: boolean, finish: FoilF
       }
 
       return () => {
-        material.current = null;
         state.inView = false;
         state.pointer = state.focus = null;
         events.abort();
@@ -119,10 +121,9 @@ export function useFoilMaterial(host: HTMLElement, still: boolean, finish: FoilF
 
   /** Advances a frame and reports whether the material still has motion to draw. */
   function advance(width: number, height: number, delta: number, pixelRatio: number) {
-    if (!material.current || !light.current.inView || width < 1 || height < 1) return;
+    if (!light.current.inView || width < 1 || height < 1) return;
 
-    // Fiber merges the props into the material's live uniform records.
-    const current = material.current.uniforms as typeof uniforms;
+    const current = parameters.uniforms;
     const target = still ? center : light.current.focus ?? light.current.pointer ?? center;
     const dt = Math.min(delta, 0.05);
     const follow = still ? 1 : 1 - Math.exp(-motion.follow * dt);
@@ -130,13 +131,6 @@ export function useFoilMaterial(host: HTMLElement, still: boolean, finish: FoilF
     position.x += (target.x - position.x) * follow;
     position.y += (target.y - position.y) * follow;
 
-    const { grating, metal, etched } = foilFinishUniforms(finish);
-    const { a, b } = foilMotionUniforms(motion);
-    current.grating.value.set(...grating);
-    current.metal.value.set(...metal);
-    current.etched.value = etched;
-    current.motionA.value.set(...a);
-    current.motionB.value.set(...b);
     current.resolution.value.set(width, height);
     current.pixelSize.value = 1 / Math.max(pixelRatio, 0.5);
     current.time.value = still ? 0 : Math.min(current.time.value + delta, foilIdleMotionSeconds);
@@ -147,5 +141,5 @@ export function useFoilMaterial(host: HTMLElement, still: boolean, finish: FoilF
     return { animating, uniforms: current };
   }
 
-  return { advance, attach, uniforms };
+  return { advance, attach, parameters, lookUniforms };
 }

@@ -1,5 +1,5 @@
 import { SidebarProvider } from '@preview/shell/components/ui/sidebar';
-import { type CSSProperties, useEffect, useId, useRef, useState } from 'react';
+import { useCallback, useId, useRef, useState } from 'react';
 
 import { skin } from './config';
 import { PARAMS_MESSAGE } from './messages';
@@ -7,10 +7,22 @@ import { Navbar } from './navbar';
 import { OptionsPanel } from './options-panel';
 import { readParams, writeParams, type WorkbenchParams } from './params';
 import { usePreferences } from './preferences';
-import { readStored, writeStored } from './storage';
+import { readStoredBoolean, writeStoredBoolean } from './storage';
 import { createUrlWriter } from './url';
 
 const writeUrl = createUrlWriter();
+const initialParams = readParams(location.search);
+const initialQuery = writeParams(initialParams);
+// Keep the initial frame URL stable so later option changes never reload the player.
+const frameUrl = `./preview.html#${initialQuery}`;
+
+function applyScheme(scheme: WorkbenchParams['scheme']) {
+  if (scheme === 'auto') delete document.documentElement.dataset.colorScheme;
+  else document.documentElement.dataset.colorScheme = scheme;
+}
+
+applyScheme(initialParams.scheme);
+writeUrl(`?${initialQuery}`);
 
 /**
  * A slimmed-down Video.js sandbox for one skin: the options panel sets how the preview looks, and the preview frame
@@ -19,37 +31,36 @@ const writeUrl = createUrlWriter();
 export function App() {
   const optionsId = useId();
   const frame = useRef<HTMLIFrameElement>(null);
-  const [params, setParams] = useState(() => readParams(location.search));
-  const [optionsOpen, setOptionsOpen] = useState(() => readStored('options-open', true));
-  // The frame loads once with the first settings; later changes are posted to it, so playback is never interrupted.
-  const [frameUrl] = useState(() => `./preview.html#${writeParams(params)}`);
+  const [params, setParams] = useState(initialParams);
+  // The iframe can load before React commits the latest input events.
+  const latestParams = useRef(initialParams);
+  const [optionsOpen, setOptionsOpen] = useState(() => readStoredBoolean('options-open', true));
   const preferences = usePreferences();
   const query = writeParams(params);
+  const updateOptionsOpen = useCallback((open: boolean) => {
+    writeStoredBoolean('options-open', open);
+    setOptionsOpen(open);
+  }, []);
 
-  // Every setting lives in the URL, so a reload or a shared link reproduces the preview.
-  useEffect(() => {
-    // The frame updates straight away; the address bar catches up once changes pause.
-    writeUrl(`?${query}`);
-    frame.current?.contentWindow?.postMessage({ type: PARAMS_MESSAGE, query }, location.origin);
-  }, [query]);
+  function sendParams(nextQuery: string) {
+    frame.current?.contentWindow?.postMessage({ type: PARAMS_MESSAGE, query: nextQuery }, location.origin);
+  }
 
-  // The scheme control drives the shell too, so its chrome matches what the preview shows.
-  useEffect(() => {
-    if (params.scheme === 'auto') delete document.documentElement.dataset.colorScheme;
-    else document.documentElement.dataset.colorScheme = params.scheme;
-  }, [params.scheme]);
-
-  const update = (value: Partial<WorkbenchParams>) => setParams((current) => ({ ...current, ...value }));
+  function update(value: Partial<WorkbenchParams>) {
+    const next = { ...latestParams.current, ...value };
+    const nextQuery = writeParams(next);
+    latestParams.current = next;
+    setParams(next);
+    applyScheme(next.scheme);
+    writeUrl(`?${nextQuery}`);
+    sendParams(nextQuery);
+  }
 
   return (
     <SidebarProvider
       open={optionsOpen}
-      onOpenChange={(open) => {
-        writeStored('options-open', open);
-        setOptionsOpen(open);
-      }}
+      onOpenChange={updateOptionsOpen}
       className="bg-background text-foreground h-screen min-h-0 flex-col overflow-hidden"
-      style={{ '--sidebar-width': '20rem' } as CSSProperties}
     >
       <Navbar previewUrl={`./preview.html#${query}`} optionsId={optionsId} />
       <div className="flex min-h-0 flex-1">
@@ -57,7 +68,7 @@ export function App() {
           <iframe
             ref={frame}
             src={frameUrl}
-            onLoad={() => frame.current?.contentWindow?.postMessage({ type: PARAMS_MESSAGE, query }, location.origin)}
+            onLoad={() => sendParams(writeParams(latestParams.current))}
             className="min-h-0 w-full flex-1 border-0"
             title={`${skin.name} preview`}
           />
