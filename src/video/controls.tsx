@@ -12,6 +12,7 @@ import { MuteButton } from "@/video/shared/mute-button";
 import { PlayButton } from "@/video/shared/play-button";
 import { FullscreenButton, ScreenControls } from "@/video/shared/screen-controls";
 import { SettingsMenu } from "@/video/shared/settings-menu";
+import { VideoTitle } from "@/video/shared/title";
 import { TimeElapsed, TimeTotal } from "@/video/shared/time-display";
 import { type ThumbnailSlot, TimeSlider } from "@/video/shared/time-slider";
 import { ButtonTooltip } from "@/video/shared/tooltip";
@@ -71,7 +72,10 @@ export function VideoControls({ renderThumbnail }: ThumbnailSlot = {}) {
         data-scaled=""
       >
         <Tooltip.Provider>
-          <ScreenControls />
+          <div className="absolute inset-x-3 top-3 flex items-start gap-1.5" data-holo-top="">
+            <VideoTitle />
+            <ScreenControls />
+          </div>
           <div className="absolute grid -translate-y-1/2 place-items-center" data-holo-playback="">
             <div className="flex items-center gap-3 media-md:gap-6">
               <SeekTen direction={-1} />

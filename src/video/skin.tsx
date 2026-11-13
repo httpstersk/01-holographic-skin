@@ -13,6 +13,7 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/resolve-class-name";
 
 import { VideoGestures } from "@/video/behaviors/gestures";
+import { HoverSound } from "@/video/behaviors/hover-sound";
 import { VideoHotkeys } from "@/video/behaviors/hotkeys";
 import { VideoControls } from "@/video/controls";
 import { feel } from "@/video/look";
@@ -65,6 +66,7 @@ export function VideoSkin({
       <VideoControls renderThumbnail={renderThumbnail} />
 
       <VideoHotkeys />
+      <HoverSound />
       <VideoGestures />
       <StatusAnnouncer />
       <Indicators>

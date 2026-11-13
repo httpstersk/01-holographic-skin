@@ -26,7 +26,8 @@
     --holo-bottom-controls: calc(var(--holo-scrubber-height) + var(--holo-utility-size) + var(--spacing) * 2);
   }
 
-  .media-skin [data-holo-screen] {
+  .media-skin [data-holo-screen],
+  .media-skin [data-holo-title] {
     display: none;
   }
 
@@ -44,6 +45,13 @@
   @container holo-controls (width >= 24rem) and (height >= 10rem) {
     .media-skin [data-holo-screen] {
       display: flex;
+    }
+  }
+
+  @container holo-controls (height >= 10rem) {
+    .media-skin [data-holo-title]:not([data-hidden]) {
+      display: flex;
+      align-items: center;
     }
   }
 

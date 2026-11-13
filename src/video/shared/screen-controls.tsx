@@ -139,7 +139,7 @@ const SCREEN_BUTTON =
 /** AirPlay, Cast, and picture-in-picture, top right. A button the browser can't use hides, and the group follows. */
 export function ScreenControls() {
   return (
-    <Controls.Group className="absolute end-3 top-3 items-center gap-1.5" data-holo-interactive="" data-holo-screen="">
+    <Controls.Group className="ms-auto shrink-0 items-center gap-1.5" data-holo-interactive="" data-holo-screen="">
       <AirPlayButton
         className={SCREEN_BUTTON}
         label="AirPlay"
